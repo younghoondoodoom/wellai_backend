@@ -60,8 +60,12 @@ SITE_ID = 1
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("POSTGRESQL_DATABASE"),
+        "USER": os.environ.get("POSTGRESQL_USER"),
+        "PASSWORD": os.environ.get("POSTGRESQL_PASSWORD"),
+        "HOST": os.environ.get("POSTGRESQL_HOST"),
+        "PORT": os.environ.get("POSTGRESQL_PORT"),
     }
 }
 

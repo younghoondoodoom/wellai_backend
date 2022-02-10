@@ -15,6 +15,7 @@ isort = "*"
 django-cors-headers = "*"
 drf-yasg = "*"
 django-allauth = "*"
+psycopg2 = "*"
 
 [dev-packages]
 
