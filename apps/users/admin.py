@@ -14,6 +14,7 @@ class MyUserAdmin(admin.ModelAdmin):
         "uid",
         "is_active",
         "is_deleted",
+        "is_staff",
     ]
 
     fieldsets = (
@@ -28,11 +29,11 @@ class MyUserAdmin(admin.ModelAdmin):
             },
         ),
         (_("Important dates"), {"fields": ("last_login",)}),
-        (_("Status"), {"fields": ("is_deleted",)}),
+        (_("Status"), {"fields": ("is_deleted", "is_staff")}),
     )
     search_fields = ["user_id"]
-    list_filter = ["last_login", "is_deleted"]
-    ordering = ["created_at"]
+    list_filter = ["last_login", "is_deleted", "is_staff"]
+    ordering = ["date_joined"]
 
 
 admin.site.register(User, MyUserAdmin)
