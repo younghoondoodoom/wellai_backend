@@ -20,6 +20,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     "allauth.socialaccount.providers.kakao",
+    "drf_yasg",
     "apps.users",
 ]
 
