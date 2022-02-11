@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     # app
     "apps.users",
     "apps.courses",
+    "apps.cores",
 ]
 
 MIDDLEWARE = [
@@ -71,7 +72,7 @@ DATABASES = {
         "PORT": os.environ.get("POSTGRESQL_PORT"),
     }
 }
-
+AUTH_USER_MODEL = "users.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/4.0/ref/settings/#auth-password-validators

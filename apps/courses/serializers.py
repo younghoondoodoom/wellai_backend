@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Course, Exercise
+from .models import Course, CourseReview, Exercise
 
 
 class ExerciseSerializer(serializers.ModelSerializer):
@@ -10,8 +10,16 @@ class ExerciseSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    exercises = ExerciseSerializer(many=True, read_only=True)
+    exercises = serializers.HyperlinkedRelatedField(
+        many=True, read_only=True, view_name="exercise-detail"
+    )
 
     class Meta:
         model = Course
+        fields = "__all__"
+
+
+class CourseReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CourseReview
         fields = "__all__"
