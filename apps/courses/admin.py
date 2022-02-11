@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Exercise, Course
+
+from .models import Course, Exercise
 
 # Register your models here.
 
