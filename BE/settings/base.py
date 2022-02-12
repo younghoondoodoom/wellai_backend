@@ -66,8 +66,13 @@ DATABASES = {
         "PASSWORD": os.environ.get("POSTGRESQL_PASSWORD"),
         "HOST": os.environ.get("POSTGRESQL_HOST"),
         "PORT": os.environ.get("POSTGRESQL_PORT"),
+        "TEST": {
+            "NAME": os.environ.get("TEST_DATABASE"),
+        },
     }
 }
+
+
 AUTH_USER_MODEL = "users.User"
 
 # Password validation
