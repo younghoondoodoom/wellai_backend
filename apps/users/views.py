@@ -1,10 +1,19 @@
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from rest_framework_simplejwt.serializers import TokenBlacklistSerializer
+from rest_framework_simplejwt.views import (
+    TokenBlacklistView,
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 from .models import User, UserInfo, UserOption
-from .serializers import UserRegisterSerializer
+from .serializers import (
+    MyTokenObtainPairSerializer,
+    UserDetailSerializer,
+    UserRegisterSerializer,
+)
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -36,4 +45,22 @@ class UserRegisterView(generics.CreateAPIView):
         return Response(status=status.HTTP_201_CREATED)
 
 
-# class UserLoginView(TokenObtainPairView):
+class UserLoginView(TokenObtainPairView):
+    """
+    유저 로그인
+
+    유저 로그인 API(access, refresh 토큰 반환)
+    """
+
+    serializer_class = MyTokenObtainPairSerializer
+
+
+class UserLogoutView(TokenBlacklistView):
+    """
+    유저 로그아웃
+
+    유저 로그아웃 API
+    - refresh 토큰을 받아 token을 디비에서 만료시킴으로써 로그아웃 처리
+    """
+
+    serializer_class = TokenBlacklistSerializer
