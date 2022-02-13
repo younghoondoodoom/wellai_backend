@@ -58,7 +58,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     )
     # TODO: 날짜 형식 버그 픽스 필요함
     date_joined = models.DateTimeField(
-        default=timezone.localtime, editable=False, verbose_name="가입날짜"
+        default=timezone.now, editable=False, verbose_name="가입날짜"
     )
     is_deleted = models.BooleanField(default=False, verbose_name="계정삭제여부")
     is_staff = models.BooleanField(default=False, verbose_name="관리자여부")
@@ -78,7 +78,7 @@ class UserInfo(models.Model):
     exercise_total = models.IntegerField(default=0, verbose_name="일별 총 운동시간")
     calories_total = models.IntegerField(default=0, verbose_name="일별 총 소모칼로리")
     exercise_date = models.DateTimeField(
-        unique=True, default=timezone.localdate, verbose_name="운동날짜"
+        unique=True, default=timezone.now, verbose_name="운동날짜"
     )
     # exercise_day = models.DateTimeField(default=, verbose_name="요일")
     modified_at = models.DateTimeField(
