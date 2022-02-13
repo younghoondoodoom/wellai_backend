@@ -48,21 +48,72 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser, groups, user_permissions
     """
 
-    user_id = models.EmailField(unique=True, verbose_name="userid")
-    nickname = models.CharField(max_length=64, verbose_name="nickname")
+    user_id = models.EmailField(unique=True, verbose_name="이메일")
+    nickname = models.CharField(max_length=64, verbose_name="닉네임")
     uid = models.UUIDField(
         unique=True,
         editable=False,
         default=uuid.uuid4,
-        verbose_name="public identifier",
+        verbose_name="외부공개키",
     )
-    date_joined = models.DateTimeField(default=timezone.now, editable=False)
-    is_deleted = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
+    # TODO: 날짜 형식 버그 픽스 필요함
+    date_joined = models.DateTimeField(
+        default=timezone.now, editable=False, verbose_name="가입날짜"
+    )
+    is_deleted = models.BooleanField(default=False, verbose_name="계정삭제여부")
+    is_staff = models.BooleanField(default=False, verbose_name="관리자여부")
 
     USERNAME_FIELD = "user_id"
     REQUIRED_FIELDS = []
     objects = CustomUserManager()
+
+    def __str__(self):
+        return self.user_id
+
+
+class UserInfo(models.Model):
+    user_id = models.ForeignKey(
+        "User", related_name="info", on_delete=models.CASCADE, db_column="user_id"
+    )
+    exercise_total = models.IntegerField(default=0, verbose_name="일별 총 운동시간")
+    calories_total = models.IntegerField(default=0, verbose_name="일별 총 소모칼로리")
+    exercise_date = models.DateTimeField(
+        unique=True, default=timezone.now, verbose_name="운동날짜"
+    )
+    # exercise_day = models.DateTimeField(default=, verbose_name="요일")
+    modified_at = models.DateTimeField(
+        auto_now=True, editable=False, verbose_name="최근수정날짜"
+    )
+
+    def __str__(self):
+        return f"{self.user_id}: {self.workout_day}mins, {self.calories_day}cals"
+
+
+class UserOption(models.Model):
+    GENDER_CHOICES = [
+        ("F", "여"),
+        ("M", "남"),
+    ]
+    user_id = models.ForeignKey(
+        "User",
+        related_name="option",
+        on_delete=models.CASCADE,
+        db_column="user_id",
+    )
+    gender = models.CharField(
+        null=True, max_length=1, choices=GENDER_CHOICES, default=None
+    )
+    height = models.IntegerField(default=None, verbose_name="키")
+    weight = models.IntegerField(default=None, verbose_name="몸무게")
+    stand = models.BooleanField(null=True, default=None, verbose_name="서서")
+    sit = models.BooleanField(null=True, default=None, verbose_name="앉아서")
+    balance = models.BooleanField(null=True, default=None, verbose_name="밸런스")
+    core = models.BooleanField(null=True, default=None, verbose_name="코어")
+    leg = models.BooleanField(null=True, default=None, verbose_name="다리")
+    back = models.BooleanField(null=True, default=None, verbose_name="등")
+    modified_at = models.DateTimeField(
+        auto_now=True, editable=False, verbose_name="최근수정날짜"
+    )
 
     def __str__(self):
         return self.user_id
