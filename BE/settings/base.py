@@ -13,6 +13,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # install
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
@@ -21,7 +22,10 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     "allauth.socialaccount.providers.kakao",
     "drf_yasg",
+    # app
     "apps.users",
+    "apps.courses",
+    "apps.cores",
 ]
 
 MIDDLEWARE = [
@@ -71,7 +75,7 @@ DATABASES = {
         },
     }
 }
-
+AUTH_USER_MODEL = "users.User"
 
 AUTH_USER_MODEL = "users.User"
 
