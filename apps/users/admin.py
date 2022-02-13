@@ -5,40 +5,17 @@ from django.utils.translation import gettext_lazy as _
 from .models import User, UserInfo, UserOption
 
 
-# Register your models here.
-class MyUserAdmin(admin.ModelAdmin):
-    model = User
-    list_display = [
-        "user_id",
-        "nickname",
-        "last_login",
-        "uid",
-        "is_active",
-        "is_deleted",
-        "is_staff",
-    ]
+class UserInfoInline(admin.TabularInline):
+    model = UserInfo
 
-    fieldsets = (
-        (
-            _("Personal info"),
-            {
-                "fields": (
-                    "user_id",
-                    "nickname",
-                    "password",
-                )
-            },
-        ),
-        (_("Important dates"), {"fields": ("last_login",)}),
-        (_("Status"), {"fields": ("is_deleted", "is_staff")}),
-    )
-    search_fields = ["user_id"]
-    list_filter = ["last_login", "is_deleted", "is_staff"]
-    ordering = ["date_joined"]
+
+class UserOptionInline(admin.TabularInline):
+    model = UserOption
 
 
 class MyUserInfoAdmin(admin.ModelAdmin):
     model = UserInfo
+
     list_display = [
         "user_id",
         "exercise_total",
@@ -96,6 +73,39 @@ class MyUserOptionAdmin(admin.ModelAdmin):
     search_fields = ["user_id"]
     list_filter = ["gender"]
     ordering = ["user_id"]
+
+
+class MyUserAdmin(admin.ModelAdmin):
+    model = User
+
+    list_display = [
+        "user_id",
+        "nickname",
+        "last_login",
+        "uid",
+        "is_active",
+        "is_deleted",
+        "is_staff",
+    ]
+
+    fieldsets = (
+        (
+            _("Personal info"),
+            {
+                "fields": (
+                    "user_id",
+                    "nickname",
+                    "password",
+                )
+            },
+        ),
+        (_("Important dates"), {"fields": ("last_login",)}),
+        (_("Status"), {"fields": ("is_deleted", "is_staff")}),
+    )
+    inlines = [UserInfoInline, UserOptionInline]
+    search_fields = ["user_id"]
+    list_filter = ["last_login", "is_deleted", "is_staff"]
+    ordering = ["date_joined"]
 
 
 admin.site.register(User, MyUserAdmin)
