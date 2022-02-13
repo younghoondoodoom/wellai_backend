@@ -8,29 +8,22 @@ from apps.users.models import User
 
 
 class Exercise(models.Model):
-    exercise_name = models.CharField(
-        max_length=50, unique=True, verbose_name="exercise_name"
-    )
-    youtube_key = models.CharField(
-        max_length=200, unique=True, verbose_name="youtube_key"
-    )
-    exercise_type = models.CharField(max_length=50, verbose_name="exercise_type")
-    exercise_level = models.CharField(max_length=50, verbose_name="exercise_level")
+    exercise_name = models.CharField(max_length=50, unique=True, verbose_name="운동 이름")
+    youtube_key = models.CharField(max_length=200, unique=True, verbose_name="유트브 키값")
+    exercise_type = models.CharField(max_length=50, verbose_name="운동 타입")
+    exercise_level = models.CharField(max_length=50, verbose_name="운동 레벨")
 
     def __str__(self):
         return self.exercise_name
 
 
 class Course(models.Model):
-    course_name = models.CharField(
-        max_length=50, unique=True, verbose_name="course_name"
-    )
+    course_name = models.CharField(max_length=50, unique=True, verbose_name="코스 이름")
     exercises = models.ManyToManyField(
-        Exercise, related_name="exercises", verbose_name="exercises"
+        Exercise, related_name="exercises", verbose_name="구성 운동"
     )
-    avg_rating = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(5)], verbose_name="rating"
-    )
+    avg_rating = models.FloatField(default=0)
+    count_review = models.IntegerField(default=0, verbose_name="리뷰 개수")
 
     class Meta:
         ordering = ["avg_rating", "course_name"]
@@ -44,15 +37,15 @@ class CourseReview(TimeStampModel):
         User,
         on_delete=models.DO_NOTHING,
         related_name="reviewer",
-        verbose_name="user_id",
+        verbose_name="유저",
     )
     course_id = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
         related_name="review_course",
-        verbose_name="course_id",
+        verbose_name="코스",
     )
-    content = models.TextField(max_length=300, verbose_name="content")
+    content = models.TextField(max_length=300, verbose_name="내용")
     rating = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(5)], verbose_name="rating"
+        validators=[MinValueValidator(1), MaxValueValidator(5)], verbose_name="평점"
     )

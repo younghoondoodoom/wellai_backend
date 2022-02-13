@@ -310,3 +310,6 @@ $RECYCLE.BIN/
 # Ignore all local history of files
 .history
 .ionide
+
+### 배포시 꼭 삭제
+migrations

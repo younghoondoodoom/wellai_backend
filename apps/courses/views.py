@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import generics, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 
@@ -13,7 +14,7 @@ from .serializers import CourseReviewSerializer, CourseSerializer, ExerciseSeria
 
 class ExerciseDetailAV(generics.RetrieveAPIView):
     """
-    운동 리스트
+    운동 상세
     """
 
     name = "Exercise Detail"
@@ -52,6 +53,32 @@ class ReviewListCreateAV(generics.ListCreateAPIView):
     serializer_class = CourseReviewSerializer
     pagination_class = StandardPageNumberPagination
     queryset = CourseReview.objects.all()
+
+    def perform_create(self, serializer):
+        """
+        코스 평균 평점에 리뷰 평점을 반영
+        """
+        # pk = self.kwargs.get("pk")
+        # course = Course.objects.get(pk=pk)
+
+        # user = self.request.user
+        # review_queryset = CourseReview.objects.filter(course_id=course, user_id=user)
+
+        # if review_queryset.exists():
+        #     raise ValidationError("이미 이 코스에 대한 리뷰가 있습니다!")
+
+        # if course.count_review == 0:
+        #     course.avg_rating = serializer.validated_data["rating"]
+
+        # else:
+        #     course.avg_rating = round(
+        #         (course.avg_rating + serializer.validated_data["rating"]) / 2, 1
+        #     )
+
+        # course.count_review += 1
+        # course.save()
+
+        serializer.save()
 
 
 class ReviewDeleteUpdateAV(generics.DestroyAPIView, generics.UpdateAPIView):
