@@ -74,7 +74,7 @@ class UserInfo(models.Model):
     today = timezone.now()
 
     user_id = models.ForeignKey(
-        "User", related_name="info", on_delete=models.CASCADE, db_column="user_id"
+        User, related_name="info", on_delete=models.CASCADE, db_column="user_id"
     )
     exercise_total = models.PositiveSmallIntegerField(
         default=0, verbose_name="일별 총 운동시간"
@@ -105,8 +105,8 @@ class UserOption(models.Model):
         ("F", "여"),
         ("M", "남"),
     ]
-    user_id = models.ForeignKey(
-        "User",
+    user_id = models.OneToOneField(
+        User,
         related_name="option",
         on_delete=models.CASCADE,
         db_column="user_id",
