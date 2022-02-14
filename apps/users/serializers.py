@@ -7,7 +7,7 @@ from .models import User, UserInfo, UserOption
 class UserInfoSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserInfo
-        exclude = ("user_id", "exercise_date", "exercise_day")
+        exclude = ("user_id", "modified_at")
 
 
 class UserOptionSerializer(serializers.ModelSerializer):
