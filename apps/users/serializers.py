@@ -1,5 +1,4 @@
 from rest_framework import serializers
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from .models import User, UserInfo, UserOption
 
@@ -24,9 +23,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         fields = ("user_id", "nickname", "password", "option")
 
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        token["user_id"] = user.user_id
-        return token
+class UserDetailSerializer(serializers.ModelSerializer):
+    daily_info = UserInfoSerializer(source="info", many=True)
+    options = UserOptionSerializer(source="option")
+
+    class Meta:
+        model = User
+        fields = ("id", "user_id", "nickname", "daily_info", "options")
