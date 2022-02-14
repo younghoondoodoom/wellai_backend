@@ -2,11 +2,11 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 
-from .models import User, UserInfo, UserOption
+from .models import User, UserDailyInfo, UserOption
 
 
 class UserInfoInline(admin.TabularInline):
-    model = UserInfo
+    model = UserDailyInfo
 
 
 class UserOptionInline(admin.TabularInline):
@@ -14,7 +14,7 @@ class UserOptionInline(admin.TabularInline):
 
 
 class MyUserInfoAdmin(admin.ModelAdmin):
-    model = UserInfo
+    model = UserDailyInfo
 
     list_display = [
         "user_id",
@@ -30,7 +30,6 @@ class MyUserInfoAdmin(admin.ModelAdmin):
         "exercise_total",
         "calories_total",
         "exercise_date",
-        "exercise_day",
     )
     search_fields = ["user_id"]
     list_filter = ["exercise_date", "exercise_day"]
@@ -109,5 +108,5 @@ class MyUserAdmin(admin.ModelAdmin):
 
 
 admin.site.register(User, MyUserAdmin)
-admin.site.register(UserInfo, MyUserInfoAdmin)
+admin.site.register(UserDailyInfo, MyUserInfoAdmin)
 admin.site.register(UserOption, MyUserOptionAdmin)

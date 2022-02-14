@@ -1,11 +1,11 @@
 from rest_framework import serializers
 
-from .models import User, UserInfo, UserOption
+from .models import User, UserDailyInfo, UserOption
 
 
-class UserInfoSerializer(serializers.ModelSerializer):
+class UserDailyInfoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserInfo
+        model = UserDailyInfo
         exclude = ("user_id", "modified_at")
 
 
@@ -16,17 +16,17 @@ class UserOptionSerializer(serializers.ModelSerializer):
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
-    option = UserOptionSerializer(source="user_option")
+    options = UserOptionSerializer(source="user_option")
 
     class Meta:
         model = User
-        fields = ("user_id", "nickname", "password", "option")
+        fields = ("user_id", "nickname", "password", "options")
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
-    daily_info = UserInfoSerializer(source="info", many=True)
+    daily = UserDailyInfoSerializer(source="daily_info", many=True)
     options = UserOptionSerializer(source="option")
 
     class Meta:
         model = User
-        fields = ("id", "user_id", "nickname", "daily_info", "options")
+        fields = ("id", "user_id", "nickname", "daily", "options")

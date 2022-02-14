@@ -70,17 +70,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.user_id
 
 
-class UserInfo(models.Model):
+class UserDailyInfo(models.Model):
     today = timezone.now()
 
     user_id = models.ForeignKey(
-        User, related_name="info", on_delete=models.CASCADE, db_column="user_id"
-    )
-    exercise_total = models.PositiveSmallIntegerField(
-        default=0, verbose_name="일별 총 운동시간"
-    )
-    calories_total = models.PositiveSmallIntegerField(
-        default=0, verbose_name="일별 총 소모칼로리"
+        User,
+        related_name="daily_info",
+        on_delete=models.CASCADE,
+        db_column="user_id",
     )
     exercise_date = models.CharField(
         unique=True,
@@ -88,9 +85,15 @@ class UserInfo(models.Model):
         max_length=15,
         verbose_name="운동날짜",
     )
+    exercise_total = models.PositiveSmallIntegerField(
+        default=0, verbose_name="일별 총 운동시간"
+    )
+    calories_total = models.PositiveSmallIntegerField(
+        default=0, verbose_name="일별 총 소모칼로리"
+    )
     # 일~토 : 0~6
     exercise_day = models.PositiveSmallIntegerField(
-        default=int(today.strftime("%w")), verbose_name="요일"
+        default=int(today.strftime("%w")), editable=False, verbose_name="요일"
     )
     modified_at = models.DateTimeField(
         auto_now=True, editable=False, verbose_name="최근수정날짜"
