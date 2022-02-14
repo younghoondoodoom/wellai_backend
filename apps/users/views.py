@@ -85,3 +85,40 @@ class UserLogoutView(TokenBlacklistView):
     )
     def post(self, request, *args, **kwargs):
         return super().post(self, request, *args, **kwargs)
+
+
+class UserDetailView(generics.ListAPIView):
+    """
+    유저 상세정보
+
+    유저 상세정보 API
+    - 유저와 관련된 모든 정보를 반환
+    """
+
+    serializer_class = UserDetailSerializer
+    permission_classes = [IsOwner]
+
+    def get_queryset(self):
+        queryset = User.objects.filter(id=self.request.user.id)
+        queryset.prefetch_related("option", "info")
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        print(queryset)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.serializer_class(queryset, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: UserDetailSerializer,
+            status.HTTP_401_UNAUTHORIZED: "권한 없음",
+        }
+    )
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
