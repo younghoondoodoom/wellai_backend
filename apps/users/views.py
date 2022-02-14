@@ -1,17 +1,22 @@
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
-from rest_framework_simplejwt.serializers import TokenBlacklistSerializer
+from rest_framework_simplejwt.serializers import (
+    TokenBlacklistSerializer,
+    TokenObtainPairSerializer,
+)
 from rest_framework_simplejwt.views import (
     TokenBlacklistView,
     TokenObtainPairView,
     TokenRefreshView,
 )
 
+from apps.cores.permissions import IsOwner
+
 from .models import User, UserInfo, UserOption
 from .serializers import (
-    MyTokenObtainPairSerializer,
     UserDetailSerializer,
+    UserInfoSerializer,
     UserRegisterSerializer,
 )
 
@@ -23,7 +28,6 @@ class UserRegisterView(generics.CreateAPIView):
     유저 회원가입 API
     """
 
-    queryset = User.objects.all()
     permission_classes = [permissions.AllowAny]
     serializer_class = UserRegisterSerializer
 
@@ -50,9 +54,17 @@ class UserLoginView(TokenObtainPairView):
     유저 로그인
 
     유저 로그인 API(access, refresh 토큰 반환)
+
     """
 
-    serializer_class = MyTokenObtainPairSerializer
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: TokenObtainPairSerializer,
+            status.HTTP_401_UNAUTHORIZED: "만료되거나 유효하지 않은 토큰",
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
 
 
 class UserLogoutView(TokenBlacklistView):
@@ -63,4 +75,13 @@ class UserLogoutView(TokenBlacklistView):
     - refresh 토큰을 받아 token을 디비에서 만료시킴으로써 로그아웃 처리
     """
 
-    serializer_class = TokenBlacklistSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: TokenBlacklistSerializer,
+            status.HTTP_401_UNAUTHORIZED: "만료되거나 유효하지 않은 토큰",
+        }
+    )
+    def post(self, request, *args, **kwargs):
+        return super().post(self, request, *args, **kwargs)
