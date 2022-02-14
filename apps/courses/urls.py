@@ -11,7 +11,6 @@ from .views import (
 )
 
 urlpatterns = [
-    # test api
     path("exercise/<int:pk>", ExerciseDetailAV.as_view(), name="exercise-detail"),
     path("list", CourseListAV.as_view(), name="course-list"),
     path("<int:pk>", CourseDetailAV.as_view(), name="course-detail"),
