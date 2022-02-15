@@ -1,10 +1,10 @@
-from django.shortcuts import render
-from rest_framework import generics, status
-from rest_framework.exceptions import ValidationError
-from rest_framework.pagination import PageNumberPagination
+from django.utils.translation import gettext_lazy as _
+from rest_framework import generics, permissions, status
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 
 from apps.cores.paginations import StandardPageNumberPagination
+from apps.cores.permissions import IsOwner
 
 from .models import Course, CourseReview, Exercise
 from .serializers import CourseReviewSerializer, CourseSerializer, ExerciseSerializer
@@ -19,7 +19,8 @@ class ExerciseDetailAV(generics.RetrieveAPIView):
 
     name = "Exercise Detail"
     serializer_class = ExerciseSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = StandardPageNumberPagination
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Exercise.objects.all()
 
 
@@ -31,6 +32,7 @@ class CourseListAV(generics.ListAPIView):
     name = "Course List"
     serializer_class = CourseSerializer
     pagination_class = StandardPageNumberPagination
+    permission_classes = [permissions.AllowAny]
     queryset = Course.objects.all()
 
 
@@ -41,6 +43,7 @@ class CourseDetailAV(generics.RetrieveAPIView):
 
     name = "Course Detail"
     serializer_class = CourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
     queryset = Course.objects.all()
 
 
@@ -52,7 +55,30 @@ class ReviewListCreateAV(generics.ListCreateAPIView):
     name = "Course Review List & Create"
     serializer_class = CourseReviewSerializer
     pagination_class = StandardPageNumberPagination
-    queryset = CourseReview.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        order_query_param = "order"
+        queryset = CourseReview.objects.all()
+        ordering = self.request.query_params.get(order_query_param)
+        if ordering is None or ordering == "rating":
+            return queryset.order_by("-rating")
+        elif ordering == "last":
+            return queryset.order_by("-created_at")
+        else:
+            raise NotFound(_("Invalid ordering"))
+
+    def create(self, request, *args, **kwargs):
+        context = {
+            "request": self.request,
+        }
+        serializer = self.get_serializer(data=request.data, context=context)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
     def perform_create(self, serializer):
         """
@@ -61,7 +87,7 @@ class ReviewListCreateAV(generics.ListCreateAPIView):
         pk = self.kwargs.get("pk")
         course = Course.objects.get(pk=pk)
 
-        user = serializer.validated_data["user_id"]
+        user = self.request.user
         review_queryset = CourseReview.objects.filter(course_id=course, user_id=user)
 
         if review_queryset.exists():
@@ -88,4 +114,5 @@ class ReviewDeleteUpdateAV(generics.RetrieveUpdateDestroyAPIView):
 
     name = "Course Review Read & Update & Destroy"
     serializer_class = CourseReviewSerializer
+    permission_classes = [IsOwner]
     queryset = CourseReview.objects.all()

@@ -20,6 +20,8 @@ class CourseSerializer(serializers.ModelSerializer):
 
 
 class CourseReviewSerializer(serializers.ModelSerializer):
+    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = CourseReview
         fields = "__all__"
