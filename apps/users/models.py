@@ -56,7 +56,6 @@ class User(AbstractBaseUser, PermissionsMixin):
         default=uuid.uuid4,
         verbose_name="외부공개키",
     )
-    # TODO: 날짜 형식 버그 픽스 필요함
     date_joined = models.DateTimeField(
         default=timezone.now, editable=False, verbose_name="가입날짜"
     )
@@ -71,22 +70,37 @@ class User(AbstractBaseUser, PermissionsMixin):
         return self.user_id
 
 
-class UserInfo(models.Model):
+class UserDailyInfo(models.Model):
+    today = timezone.now()
+
     user_id = models.ForeignKey(
-        "User", related_name="info", on_delete=models.CASCADE, db_column="user_id"
+        User,
+        related_name="daily_info",
+        on_delete=models.CASCADE,
+        db_column="user_id",
     )
-    exercise_total = models.IntegerField(default=0, verbose_name="일별 총 운동시간")
-    calories_total = models.IntegerField(default=0, verbose_name="일별 총 소모칼로리")
-    exercise_date = models.DateTimeField(
-        unique=True, default=timezone.now, verbose_name="운동날짜"
+    exercise_date = models.CharField(
+        unique=True,
+        default=today.strftime("%Y-%m-%d"),
+        max_length=15,
+        verbose_name="운동날짜",
     )
-    # exercise_day = models.DateTimeField(default=, verbose_name="요일")
+    exercise_total = models.PositiveSmallIntegerField(
+        default=0, verbose_name="일별 총 운동시간"
+    )
+    calories_total = models.PositiveSmallIntegerField(
+        default=0, verbose_name="일별 총 소모칼로리"
+    )
+    # 일~토 : 0~6
+    exercise_day = models.PositiveSmallIntegerField(
+        default=int(today.strftime("%w")), editable=False, verbose_name="요일"
+    )
     modified_at = models.DateTimeField(
         auto_now=True, editable=False, verbose_name="최근수정날짜"
     )
 
     def __str__(self):
-        return f"{self.user_id}: {self.workout_day}mins, {self.calories_day}cals"
+        return f"{self.user_id}: {self.exercise_total}mins, {self.calories_total}cals"
 
 
 class UserOption(models.Model):
@@ -94,17 +108,21 @@ class UserOption(models.Model):
         ("F", "여"),
         ("M", "남"),
     ]
-    user_id = models.ForeignKey(
-        "User",
+    user_id = models.OneToOneField(
+        User,
         related_name="option",
         on_delete=models.CASCADE,
         db_column="user_id",
     )
     gender = models.CharField(
-        null=True, max_length=1, choices=GENDER_CHOICES, default=None
+        blank=True, null=True, max_length=1, choices=GENDER_CHOICES, default=None
     )
-    height = models.IntegerField(default=None, verbose_name="키")
-    weight = models.IntegerField(default=None, verbose_name="몸무게")
+    height = models.PositiveSmallIntegerField(
+        blank=True, null=True, default=None, verbose_name="키"
+    )
+    weight = models.PositiveSmallIntegerField(
+        blank=True, null=True, default=None, verbose_name="몸무게"
+    )
     stand = models.BooleanField(null=True, default=None, verbose_name="서서")
     sit = models.BooleanField(null=True, default=None, verbose_name="앉아서")
     balance = models.BooleanField(null=True, default=None, verbose_name="밸런스")
@@ -116,4 +134,4 @@ class UserOption(models.Model):
     )
 
     def __str__(self):
-        return self.user_id
+        return f"{self.user_id}"
