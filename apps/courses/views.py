@@ -21,6 +21,7 @@ class ExerciseDetailAV(generics.RetrieveAPIView):
     serializer_class = ExerciseSerializer
     pagination_class = StandardPageNumberPagination
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "standard"
     queryset = Exercise.objects.all()
 
 
@@ -33,6 +34,7 @@ class CourseListAV(generics.ListAPIView):
     serializer_class = CourseSerializer
     pagination_class = StandardPageNumberPagination
     permission_classes = [permissions.AllowAny]
+    throttle_scope = "standard"
     queryset = Course.objects.all()
 
 
@@ -44,6 +46,7 @@ class CourseDetailAV(generics.RetrieveAPIView):
     name = "Course Detail"
     serializer_class = CourseSerializer
     permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "standard"
     queryset = Course.objects.all()
 
 
@@ -55,6 +58,7 @@ class ReviewListCreateAV(generics.ListCreateAPIView):
     name = "Course Review List & Create"
     serializer_class = CourseReviewSerializer
     pagination_class = StandardPageNumberPagination
+    throttle_scope = "standard"
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
@@ -115,4 +119,5 @@ class ReviewDeleteUpdateAV(generics.RetrieveUpdateDestroyAPIView):
     name = "Course Review Read & Update & Destroy"
     serializer_class = CourseReviewSerializer
     permission_classes = [IsOwner]
+    throttle_scope = "standard"
     queryset = CourseReview.objects.all()
