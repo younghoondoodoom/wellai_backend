@@ -13,10 +13,10 @@ from rest_framework_simplejwt.views import (
 
 from apps.cores.permissions import IsOwner
 
-from .models import User, UserInfo, UserOption
+from .models import User, UserDailyInfo, UserOption
 from .serializers import (
     UserDetailSerializer,
-    UserInfoSerializer,
+    UserOptionSerializer,
     UserRegisterSerializer,
 )
 
@@ -41,7 +41,7 @@ class UserRegisterView(generics.CreateAPIView):
         user_id = request.data["user_id"]
         nickname = request.data["nickname"]
         password = request.data["password"]
-        user_option = request.data["option"]
+        user_option = request.data["options"]
         user = User.objects.create_user(
             user_id=user_id, nickname=nickname, password=password
         )
@@ -54,7 +54,6 @@ class UserLoginView(TokenObtainPairView):
     유저 로그인
 
     유저 로그인 API(access, refresh 토큰 반환)
-
     """
 
     @swagger_auto_schema(
@@ -89,7 +88,7 @@ class UserLogoutView(TokenBlacklistView):
 
 class UserDetailView(generics.ListAPIView):
     """
-    유저 상세정보
+    유저 상세정보 조회
 
     유저 상세정보 API
     - 유저와 관련된 모든 정보를 반환
@@ -100,12 +99,11 @@ class UserDetailView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset = User.objects.filter(id=self.request.user.id)
-        queryset.prefetch_related("option", "info")
+        queryset.prefetch_related("option", "daily_info")
         return queryset
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-        print(queryset)
         page = self.paginate_queryset(queryset)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
@@ -122,3 +120,29 @@ class UserDetailView(generics.ListAPIView):
     )
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
+
+
+class UserDetailUpdateView(generics.UpdateAPIView):
+    """
+    유저 상세정보 수정
+
+    유저 상세정보 수정 API
+    - 유저와 관련된 정보 수정
+    """
+
+    serializer_class = UserOptionSerializer
+    permission_classes = [IsOwner]
+
+    def get_queryset(self):
+        queryset = User.objects.filter(id=self.request.user.id)
+        queryset.prefetch_related("option")
+        return queryset
+
+    @swagger_auto_schema(
+        responses={
+            status.HTTP_200_OK: UserOptionSerializer,
+            status.HTTP_401_UNAUTHORIZED: "권한 없음",
+        }
+    )
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
