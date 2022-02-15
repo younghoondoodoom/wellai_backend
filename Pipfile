@@ -17,6 +17,7 @@ drf-yasg = "*"
 django-allauth = "*"
 psycopg2 = "*"
 pytest-factoryboy = "*"
+model-bakery = "*"
 
 [dev-packages]
 
