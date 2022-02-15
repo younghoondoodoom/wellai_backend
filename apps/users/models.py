@@ -105,6 +105,7 @@ class UserDailyInfo(models.Model):
 
 class UserOption(models.Model):
     GENDER_CHOICES = [
+        (None, ""),
         ("F", "여"),
         ("M", "남"),
     ]
@@ -117,18 +118,14 @@ class UserOption(models.Model):
     gender = models.CharField(
         blank=True, null=True, max_length=1, choices=GENDER_CHOICES, default=None
     )
-    height = models.PositiveSmallIntegerField(
-        blank=True, null=True, default=None, verbose_name="키"
-    )
-    weight = models.PositiveSmallIntegerField(
-        blank=True, null=True, default=None, verbose_name="몸무게"
-    )
-    stand = models.BooleanField(null=True, default=None, verbose_name="서서")
-    sit = models.BooleanField(null=True, default=None, verbose_name="앉아서")
-    balance = models.BooleanField(null=True, default=None, verbose_name="밸런스")
-    core = models.BooleanField(null=True, default=None, verbose_name="코어")
-    leg = models.BooleanField(null=True, default=None, verbose_name="다리")
-    back = models.BooleanField(null=True, default=None, verbose_name="등")
+    height = models.PositiveSmallIntegerField(default=0, verbose_name="키")
+    weight = models.PositiveSmallIntegerField(default=0, verbose_name="몸무게")
+    stand = models.BooleanField(default=False, verbose_name="서서")
+    sit = models.BooleanField(default=False, verbose_name="앉아서")
+    balance = models.BooleanField(default=False, verbose_name="밸런스")
+    core = models.BooleanField(default=False, verbose_name="코어")
+    leg = models.BooleanField(default=False, verbose_name="다리")
+    back = models.BooleanField(default=False, verbose_name="등")
     modified_at = models.DateTimeField(
         auto_now=True, editable=False, verbose_name="최근수정날짜"
     )
