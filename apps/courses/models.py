@@ -1,7 +1,7 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 
-from apps.cores.models import TimeStampModel
+from apps.cores.models import DeleteModel, TimeStampModel
 from apps.users.models import User
 
 # Create your models here.
@@ -22,7 +22,7 @@ class Course(models.Model):
     exercises = models.ManyToManyField(
         Exercise, related_name="exercises", verbose_name="구성 운동"
     )
-    avg_rating = models.FloatField(default=0)
+    avg_rating = models.FloatField(default=0, verbose_name="평균 평점")
     count_review = models.IntegerField(default=0, verbose_name="리뷰 개수")
 
     class Meta:
@@ -32,7 +32,7 @@ class Course(models.Model):
         return self.course_name
 
 
-class CourseReview(TimeStampModel):
+class CourseReview(TimeStampModel, DeleteModel):
     user_id = models.ForeignKey(
         User,
         on_delete=models.DO_NOTHING,
@@ -49,3 +49,6 @@ class CourseReview(TimeStampModel):
     rating = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1), MaxValueValidator(5)], verbose_name="평점"
     )
+
+    def __str__(self):
+        return str(self.course_id) + " - " + str(self.user_id)
