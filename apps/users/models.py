@@ -2,8 +2,10 @@ import uuid
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core.validators import EmailValidator
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 
 
 class CustomUserManager(BaseUserManager):
@@ -48,8 +50,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser, groups, user_permissions
     """
 
-    user_id = models.EmailField(unique=True, verbose_name="이메일")
-    nickname = models.CharField(max_length=64, verbose_name="닉네임")
+    user_id = models.EmailField(
+        unique=True, verbose_name="이메일", validators=[EmailValidator]
+    )
+    nickname = models.CharField(unique=True, max_length=64, verbose_name="닉네임")
     uid = models.UUIDField(
         unique=True,
         editable=False,
