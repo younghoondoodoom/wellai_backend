@@ -29,6 +29,7 @@ class Course(models.Model):
     exercises = models.ManyToManyField(
         Exercise, related_name="exercises", verbose_name="구성 운동"
     )
+    img_key = models.CharField(max_length=100)
     avg_rating = models.FloatField(default=0, verbose_name="평균 평점")
     count_review = models.IntegerField(default=0, verbose_name="리뷰 개수")
     hash_tag = models.ManyToManyField(Tag, related_name="hash_tag", verbose_name="해쉬태그")

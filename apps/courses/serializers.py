@@ -31,4 +31,4 @@ class CourseReviewSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CourseReview
-        fields = "__all__"
+        exclude = ["is_deleted", "deleted_at"]
