@@ -1,5 +1,5 @@
 from django.utils.translation import gettext_lazy as _
-from rest_framework import generics, permissions, status
+from rest_framework import filters, generics, permissions, status
 from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 
@@ -36,6 +36,8 @@ class CourseListAV(generics.ListAPIView):
     permission_classes = [permissions.AllowAny]
     throttle_scope = "standard"
     queryset = Course.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["course_name", "hash_tag__tag"]
 
 
 class CourseDetailAV(generics.RetrieveAPIView):
@@ -60,17 +62,10 @@ class ReviewListCreateAV(generics.ListCreateAPIView):
     pagination_class = StandardPageNumberPagination
     throttle_scope = "standard"
     permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        order_query_param = "order"
-        queryset = CourseReview.objects.all()
-        ordering = self.request.query_params.get(order_query_param)
-        if ordering is None or ordering == "rating":
-            return queryset.order_by("-rating")
-        elif ordering == "last":
-            return queryset.order_by("-created_at")
-        else:
-            raise NotFound(_("Invalid ordering"))
+    queryset = CourseReview.objects.all()
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["rating", "created_at"]
+    ordering = ["-rating"]
 
     def create(self, request, *args, **kwargs):
         context = {
