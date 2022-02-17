@@ -2,7 +2,7 @@ import uuid
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
-from django.core.validators import EmailValidator
+from django.core.validators import EmailValidator, RegexValidator
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -84,7 +84,6 @@ class UserDailyInfo(models.Model):
         db_column="user_id",
     )
     exercise_date = models.CharField(
-        unique=True,
         default=today.strftime("%Y-%m-%d"),
         max_length=15,
         verbose_name="운동날짜",
@@ -102,6 +101,13 @@ class UserDailyInfo(models.Model):
     modified_at = models.DateTimeField(
         auto_now=True, editable=False, verbose_name="최근수정날짜"
     )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_id", "exercise_date"], name="users_userdailyinfo_history"
+            )
+        ]
 
     def __str__(self):
         return f"{self.user_id}: {self.exercise_total}mins, {self.calories_total}cals"
