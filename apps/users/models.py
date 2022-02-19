@@ -52,7 +52,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser, groups, user_permissions
     """
 
-    user_id = models.EmailField(unique=True, verbose_name="이메일")
+    user_id = models.EmailField(
+        unique=True, validators=[EmailValidator], verbose_name="이메일"
+    )
 
     nickname = models.CharField(
         unique=True,
