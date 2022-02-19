@@ -2,11 +2,6 @@ from django.db.models import Q
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, mixins, permissions, status
 from rest_framework.response import Response
-from rest_framework_simplejwt.views import (
-    TokenBlacklistView,
-    TokenObtainPairView,
-    TokenRefreshView,
-)
 
 from apps.cores.permissions import IsOwner
 
@@ -64,23 +59,33 @@ class UserRegisterView(generics.CreateAPIView):
             return Response(error_list, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserLoginView(TokenObtainPairView):
+class UserOptionUpdateView(generics.UpdateAPIView):
     """
-    유저 로그인
+    유저 정보 수정
 
-    유저 로그인 API(access, refresh 토큰 반환)
-    """
-
-
-class UserLogoutView(TokenBlacklistView):
-    """
-    유저 로그아웃
-
-    유저 로그아웃 API
-    - refresh 토큰을 받아 token을 디비에서 만료시킴으로써 로그아웃 처리
+    유저 정보 수정 API
+    - 유저와 관련된 추가 정보 수정
     """
 
-    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserOptionSerializer
+    permission_classes = [IsOwner]
+
+    def get_queryset(self):
+        queryset = User.objects.get(id=self.request.user.id)
+        queryset.prefetch_related("option")
+        return queryset
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = UserOption.user_id.get(user_id=self.request.user)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, "_prefetched_objects_cache", None):
+            instance._prefetched_objects_cache = {}
+
+        return Response(serializer.data)
 
 
 class UserDetailView(generics.ListAPIView):
