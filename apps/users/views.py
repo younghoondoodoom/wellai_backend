@@ -30,12 +30,11 @@ class UserCheckView(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = UserSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
+        if serializer.is_valid():
             return Response({"message": "기본 정보 통과"}, status=status.HTTP_200_OK)
         else:
-            error_list = [serializer.errors[error][0] for error in serializer.errors]
+            error_list = serializer.errors
             return Response(error_list, status=status.HTTP_400_BAD_REQUEST)
-        # serializer = self.serializer_class.validate(self, request)
 
 
 class UserRegisterView(generics.CreateAPIView):
@@ -53,16 +52,16 @@ class UserRegisterView(generics.CreateAPIView):
         nickname = request.data["nickname"]
         password = request.data["password"]
         user_option = request.data["options"]
-        try:
+        serializer = UserRegisterSerializer(data=request.data)
+        if serializer.is_valid():
             user = User.objects.create_user(
                 user_id=user_id, nickname=nickname, password=password
             )
-        except Exception:
-            return Response(
-                {"message": "잘못된 정보를 입력하셨습니다"}, status=status.HTTP_400_BAD_REQUEST
-            )
-        UserOption.objects.create(user_id=user, **user_option)
-        return Response({"message": "가입 완료"}, status=status.HTTP_201_CREATED)
+            UserOption.objects.create(user_id=user, **user_option)
+            return Response({"message": "가입 완료"}, status=status.HTTP_201_CREATED)
+        else:
+            error_list = serializer.errors
+            return Response(error_list, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserLoginView(TokenObtainPairView):

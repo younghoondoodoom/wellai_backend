@@ -7,6 +7,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from .validators import NicknameValidator, PasswordValidator
+
 
 class CustomUserManager(BaseUserManager):
     use_in_migrations = True
@@ -50,10 +52,19 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser, groups, user_permissions
     """
 
-    user_id = models.EmailField(
-        unique=True, verbose_name="이메일", validators=[EmailValidator]
+    user_id = models.EmailField(unique=True, verbose_name="이메일")
+
+    nickname = models.CharField(
+        unique=True,
+        max_length=64,
+        validators=[NicknameValidator()],
+        verbose_name="닉네임",
     )
-    nickname = models.CharField(unique=True, max_length=64, verbose_name="닉네임")
+    password = models.CharField(
+        _("password"),
+        max_length=128,
+        validators=[PasswordValidator()],
+    )
     uid = models.UUIDField(
         unique=True,
         editable=False,
@@ -126,7 +137,12 @@ class UserOption(models.Model):
         db_column="user_id",
     )
     gender = models.CharField(
-        blank=True, null=True, max_length=1, choices=GENDER_CHOICES, default=None
+        blank=True,
+        null=True,
+        max_length=1,
+        choices=GENDER_CHOICES,
+        default=None,
+        verbose_name="성별",
     )
     height = models.PositiveSmallIntegerField(default=0, verbose_name="키")
     weight = models.PositiveSmallIntegerField(default=0, verbose_name="몸무게")
