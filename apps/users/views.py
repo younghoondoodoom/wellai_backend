@@ -1,3 +1,6 @@
+import json
+
+import requests
 from django.db.models import Q
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, mixins, permissions, status
@@ -39,7 +42,6 @@ class UserRegisterView(generics.CreateAPIView):
     유저 회원가입 API
     """
 
-    permission_classes = [permissions.AllowAny]
     serializer_class = UserRegisterSerializer
 
     def create(self, request, *args, **kwargs):
@@ -57,6 +59,22 @@ class UserRegisterView(generics.CreateAPIView):
         else:
             error_list = serializer.errors
             return Response(error_list, status=status.HTTP_400_BAD_REQUEST)
+
+
+class KakaoLoginView(generics.CreateAPIView):
+    serializer_class = UserRegisterSerializer
+
+    def create(self, request, *args, **kwargs):
+        kakao_token = request.data["token"]
+        url = "https://kapi.kakao.com/v2/user/me"
+        headers = {
+            "Authorization": f"Bearer {kakao_token}",
+            "Content-type": "application/x-www-form-urlencoded; charset=utf-8",
+        }
+        response = requests.post(url, headers=headers)
+        response = json.loads(response.text)
+        # TODO: social 나머지 부분 구현 필요
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserOptionUpdateView(generics.UpdateAPIView):
