@@ -18,6 +18,7 @@ django-allauth = "*"
 psycopg2 = "*"
 pytest-factoryboy = "*"
 model-bakery = "*"
+requests = "*"
 
 [dev-packages]
 
