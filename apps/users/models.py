@@ -7,6 +7,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from apps.cores.models import TimeStampModel
+
 from .validators import NicknameValidator, PasswordValidator
 
 
@@ -126,7 +128,7 @@ class UserDailyInfo(models.Model):
         return f"{self.user_id}: {self.exercise_total}mins, {self.calories_total}cals"
 
 
-class UserOption(models.Model):
+class UserOption(TimeStampModel, models.Model):
     GENDER_CHOICES = [
         (None, ""),
         ("F", "여"),
@@ -154,9 +156,6 @@ class UserOption(models.Model):
     core = models.BooleanField(default=False, verbose_name="코어")
     leg = models.BooleanField(default=False, verbose_name="다리")
     back = models.BooleanField(default=False, verbose_name="등")
-    modified_at = models.DateTimeField(
-        auto_now=True, editable=False, verbose_name="최근수정날짜"
-    )
 
     def __str__(self):
         return f"{self.user_id}"
