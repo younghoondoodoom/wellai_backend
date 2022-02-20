@@ -5,6 +5,7 @@ from django.db.models import Q
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework import generics, mixins, permissions, status
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from apps.cores.permissions import IsOwner
 
@@ -77,33 +78,31 @@ class KakaoLoginView(generics.CreateAPIView):
         return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserOptionUpdateView(generics.UpdateAPIView):
-    """
-    유저 정보 수정
-
-    유저 정보 수정 API
-    - 유저와 관련된 추가 정보 수정
-    """
-
-    serializer_class = UserOptionSerializer
+class UserOptionUpdateView(APIView):
     permission_classes = [IsOwner]
 
-    def get_queryset(self):
-        queryset = User.objects.get(id=self.request.user.id)
-        queryset.prefetch_related("option")
-        return queryset
+    def get(self, request, format=None):
+        user = User.objects.get(id=request.user.id)
+        serializer = UserRegisterSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def update(self, request, *args, **kwargs):
-        partial = kwargs.pop("partial", False)
-        instance = UserOption.user_id.get(user_id=self.request.user)
-        serializer = self.get_serializer(instance, data=request.data, partial=partial)
-        serializer.is_valid(raise_exception=True)
-        self.perform_update(serializer)
-
-        if getattr(instance, "_prefetched_objects_cache", None):
-            instance._prefetched_objects_cache = {}
-
-        return Response(serializer.data)
+    def post(self, request, format=None):
+        serializer = UserOptionSerializer(data=request.data)
+        if serializer.is_valid():
+            user = UserOption.objects.get_or_create(user_id=request.user)[0]
+            user.gender = request.data["gender"]
+            user.height = request.data["height"]
+            user.weight = request.data["weight"]
+            user.stand = request.data["stand"]
+            user.sit = request.data["sit"]
+            user.balance = request.data["balance"]
+            user.core = request.data["core"]
+            user.leg = request.data["leg"]
+            user.back = request.data["back"]
+            user.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserDetailView(generics.ListAPIView):

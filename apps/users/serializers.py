@@ -50,11 +50,15 @@ class UserDailyInfoSerializer(serializers.ModelSerializer):
 class UserOptionSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserOption
-        exclude = ("user_id", "modified_at")
+        exclude = ("id", "user_id")
+        read_only_fields = ("modified_at", "created_at")
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
-    options = UserOptionSerializer(source="user_option")
+    options = UserOptionSerializer(source="option")
+    password = serializers.CharField(
+        max_length=128, validators=[PasswordValidator()], write_only=True
+    )
 
     class Meta:
         model = User
