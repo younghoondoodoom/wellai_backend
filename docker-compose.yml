@@ -1,0 +1,31 @@
+version: "3"
+
+services:
+  web:
+    tty: true
+    build: .
+    restart: always  
+    ports:
+      - "8000:8000"
+    volumes:
+#. ( django 프로젝트의 루트) : web ( 도커안에 존재하는 폴더 , 사용자 지정 아님)  
+      - .:/usr/src/app
+    depends_on:
+      - db
+    environment:
+      POSTGRESQL_DATABASE: sipganji
+      POSTGRESQL_USER:  # TODO: 유저이름
+      POSTGRESQL_PASSWORD:  # TODO: 비밀번호
+      POSTGRESQL_HOST: db
+      POSTGRESQL_PORT: 5432
+      TEST_DATABASE: test_sipganji
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: sipganji
+      POSTGRES_USER:  # TODO: 유저이름
+      POSTGRES_PASSWORD:   # TODO: 비밀번호
+

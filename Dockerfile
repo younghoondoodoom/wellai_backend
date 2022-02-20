@@ -8,6 +8,11 @@ ENV LC_ALL ko_KR.UTF-8
 # stop Python from generating .pyc files, and enable Python tracebacks on segfaults:
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONFAULTHANDLER 1
+ENV PYTHONUNBUFFERED 1
+
+# TODO: 장고 시크릿키
+ENV SECRET_KEY 
+ENV DJANGO_SETTINGS_MODULE BE.settings.local
 
 # postgresql
 # RUN apk update \
@@ -31,14 +36,20 @@ WORKDIR /usr/src/app
 # 현재 경로, Dockerfile이 위치한 경로에 있는 모든 파일을 지금 위치로 복사해 온다
 COPY . .
 
+# 장고 웹서버 8000 포트를 컨테이너에서도 열어줌
+EXPOSE 8000
+
 # 의존성 설치
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 # 장고 실행 명령어
-CMD ["python3", "manage.py", "runserver", "0:8000"]
+RUN chmod +x entrypoint.sh
+ENTRYPOINT ["sh","./entrypoint.sh"]
+# CMD ["./entrypoint.sh"]
+# CMD ["python3", "manage.py", "runserver", "0:8000"]
+# CMD ["bash", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
 
-# 장고 웹서버 8000 포트를 컨테이너에서도 열어줌
-EXPOSE 8000
+
 
 # RUN pipenv install gunicorn
