@@ -2,8 +2,12 @@ import uuid
 
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
+from django.core.validators import EmailValidator, RegexValidator
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
+
+from .validators import NicknameValidator, PasswordValidator
 
 
 class CustomUserManager(BaseUserManager):
@@ -48,8 +52,21 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_superuser, groups, user_permissions
     """
 
-    user_id = models.EmailField(unique=True, verbose_name="이메일")
-    nickname = models.CharField(max_length=64, verbose_name="닉네임")
+    user_id = models.EmailField(
+        unique=True, validators=[EmailValidator], verbose_name="이메일"
+    )
+
+    nickname = models.CharField(
+        unique=True,
+        max_length=64,
+        validators=[NicknameValidator()],
+        verbose_name="닉네임",
+    )
+    password = models.CharField(
+        _("password"),
+        max_length=128,
+        validators=[PasswordValidator()],
+    )
     uid = models.UUIDField(
         unique=True,
         editable=False,
@@ -80,7 +97,6 @@ class UserDailyInfo(models.Model):
         db_column="user_id",
     )
     exercise_date = models.CharField(
-        unique=True,
         default=today.strftime("%Y-%m-%d"),
         max_length=15,
         verbose_name="운동날짜",
@@ -99,12 +115,20 @@ class UserDailyInfo(models.Model):
         auto_now=True, editable=False, verbose_name="최근수정날짜"
     )
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_id", "exercise_date"], name="users_userdailyinfo_history"
+            )
+        ]
+
     def __str__(self):
         return f"{self.user_id}: {self.exercise_total}mins, {self.calories_total}cals"
 
 
 class UserOption(models.Model):
     GENDER_CHOICES = [
+        (None, ""),
         ("F", "여"),
         ("M", "남"),
     ]
@@ -115,20 +139,21 @@ class UserOption(models.Model):
         db_column="user_id",
     )
     gender = models.CharField(
-        blank=True, null=True, max_length=1, choices=GENDER_CHOICES, default=None
+        blank=True,
+        null=True,
+        max_length=1,
+        choices=GENDER_CHOICES,
+        default=None,
+        verbose_name="성별",
     )
-    height = models.PositiveSmallIntegerField(
-        blank=True, null=True, default=None, verbose_name="키"
-    )
-    weight = models.PositiveSmallIntegerField(
-        blank=True, null=True, default=None, verbose_name="몸무게"
-    )
-    stand = models.BooleanField(null=True, default=None, verbose_name="서서")
-    sit = models.BooleanField(null=True, default=None, verbose_name="앉아서")
-    balance = models.BooleanField(null=True, default=None, verbose_name="밸런스")
-    core = models.BooleanField(null=True, default=None, verbose_name="코어")
-    leg = models.BooleanField(null=True, default=None, verbose_name="다리")
-    back = models.BooleanField(null=True, default=None, verbose_name="등")
+    height = models.PositiveSmallIntegerField(default=0, verbose_name="키")
+    weight = models.PositiveSmallIntegerField(default=0, verbose_name="몸무게")
+    stand = models.BooleanField(default=False, verbose_name="서서")
+    sit = models.BooleanField(default=False, verbose_name="앉아서")
+    balance = models.BooleanField(default=False, verbose_name="밸런스")
+    core = models.BooleanField(default=False, verbose_name="코어")
+    leg = models.BooleanField(default=False, verbose_name="다리")
+    back = models.BooleanField(default=False, verbose_name="등")
     modified_at = models.DateTimeField(
         auto_now=True, editable=False, verbose_name="최근수정날짜"
     )

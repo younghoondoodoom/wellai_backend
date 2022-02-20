@@ -1,17 +1,27 @@
 from django.urls import path
+from rest_framework_simplejwt.views import (
+    TokenBlacklistView,
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView,
+)
 
 from .views import (
-    UserDetailUpdateView,
+    KakaoLoginView,
+    UserCheckView,
     UserDetailView,
-    UserLoginView,
-    UserLogoutView,
+    UserOptionUpdateView,
     UserRegisterView,
 )
 
 urlpatterns = [
+    path("check/", UserCheckView.as_view(), name="user-check"),
     path("register/", UserRegisterView.as_view(), name="register"),
-    path("login/", UserLoginView.as_view(), name="login"),
-    path("logout/", UserLogoutView.as_view(), name="logout"),
+    path("login/", TokenObtainPairView.as_view(), name="login"),
+    path("login/kakao/", KakaoLoginView.as_view(), name="kakao-login"),
+    path("token/verify/", TokenVerifyView.as_view(), name="token-verify"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    path("logout/", TokenBlacklistView.as_view(), name="logout"),
     path("detail/", UserDetailView.as_view(), name="user-detail"),
-    path("detail/update", UserDetailUpdateView.as_view(), name="user-detail-update"),
+    path("option/", UserOptionUpdateView.as_view(), name="user-option-update"),
 ]
