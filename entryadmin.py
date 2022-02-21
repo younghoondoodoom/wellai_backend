@@ -1,3 +1,6 @@
 from apps.users.models import User
 
-User.objects.create_superuser("admin@admin.com", "1234")
+try:
+    User.objects.get(nickname="admin")
+except Exception:
+    User.objects.create_superuser("admin@admin.com", "1234")
