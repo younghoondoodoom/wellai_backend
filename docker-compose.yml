@@ -12,20 +12,14 @@ services:
       - .:/usr/src/app
     depends_on:
       - db
-    environment:
-      POSTGRESQL_DATABASE: sipganji
-      POSTGRESQL_USER:  # TODO: 유저이름
-      POSTGRESQL_PASSWORD:  # TODO: 비밀번호
-      POSTGRESQL_HOST: db
-      POSTGRESQL_PORT: 5432
-      TEST_DATABASE: test_sipganji
+    env_file:
+      - ./.env.dev
+
   db:
     image: postgres
     restart: always
     ports:
       - "5433:5432"
-    environment:
-      POSTGRES_DB: sipganji
-      POSTGRES_USER:  # TODO: 유저이름
-      POSTGRES_PASSWORD:   # TODO: 비밀번호
+    env_file:
+      - ./.env.dev
 

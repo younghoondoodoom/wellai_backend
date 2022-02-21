@@ -10,10 +10,6 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONFAULTHANDLER 1
 ENV PYTHONUNBUFFERED 1
 
-# TODO: 장고 시크릿키
-ENV SECRET_KEY 
-ENV DJANGO_SETTINGS_MODULE BE.settings.local
-
 # postgresql
 # RUN apk update \
 #     && apk install -y --no-install-recommends \
