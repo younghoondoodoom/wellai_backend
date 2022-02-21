@@ -1,0 +1,25 @@
+version: "3"
+
+services:
+  web:
+    tty: true
+    build: .
+    restart: always  
+    ports:
+      - "8000:8000"
+    volumes:
+#. ( django 프로젝트의 루트) : web ( 도커안에 존재하는 폴더 , 사용자 지정 아님)  
+      - .:/usr/src/app
+    depends_on:
+      - db
+    env_file:
+      - ./.env.dev
+
+  db:
+    image: postgres
+    restart: always
+    ports:
+      - "5433:5432"
+    env_file:
+      - ./.env.dev
+
