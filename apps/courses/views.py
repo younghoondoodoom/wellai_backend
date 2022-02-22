@@ -27,7 +27,7 @@ class ExerciseDetailAV(generics.RetrieveAPIView):
 
 class CourseListAV(generics.ListAPIView):
     """
-    코스 리스트
+    코스 리스트(검색 포함)
     """
 
     name = "Course List"

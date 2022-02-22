@@ -60,4 +60,22 @@ class CourseReview(TimeStampModel, DeleteModel):
     )
 
     def __str__(self):
-        return str(self.course_id) + " - " + str(self.user_id)
+        return str(self.course_id) + " - " + self.user_id.nickname
+
+
+class CourseLike(TimeStampModel):
+    user_id = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="courselike_user",
+        verbose_name="유저",
+    )
+    course_id = models.ForeignKey(
+        Course,
+        on_delete=models.CASCADE,
+        related_name="courselike_course",
+        verbose_name="코스",
+    )
+
+    def __str__(self):
+        return self.user_id.nickname + " - " + self.course_id
