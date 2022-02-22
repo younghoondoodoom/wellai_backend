@@ -1,10 +1,10 @@
-from django.shortcuts import render
-from rest_framework import generics, status
-from rest_framework.exceptions import ValidationError
-from rest_framework.pagination import PageNumberPagination
+from django.utils.translation import gettext_lazy as _
+from rest_framework import filters, generics, permissions, status
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
 
 from apps.cores.paginations import StandardPageNumberPagination
+from apps.cores.permissions import IsOwner
 
 from .models import Course, CourseReview, Exercise
 from .serializers import CourseReviewSerializer, CourseSerializer, ExerciseSerializer
@@ -19,19 +19,25 @@ class ExerciseDetailAV(generics.RetrieveAPIView):
 
     name = "Exercise Detail"
     serializer_class = ExerciseSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = StandardPageNumberPagination
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "standard"
     queryset = Exercise.objects.all()
 
 
 class CourseListAV(generics.ListAPIView):
     """
-    코스 리스트
+    코스 리스트(검색 포함)
     """
 
     name = "Course List"
     serializer_class = CourseSerializer
     pagination_class = StandardPageNumberPagination
+    permission_classes = [permissions.AllowAny]
+    throttle_scope = "standard"
     queryset = Course.objects.all()
+    filter_backends = [filters.SearchFilter]
+    search_fields = ["course_name", "hash_tag__tag"]
 
 
 class CourseDetailAV(generics.RetrieveAPIView):
@@ -41,6 +47,8 @@ class CourseDetailAV(generics.RetrieveAPIView):
 
     name = "Course Detail"
     serializer_class = CourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "standard"
     queryset = Course.objects.all()
 
 
@@ -52,7 +60,24 @@ class ReviewListCreateAV(generics.ListCreateAPIView):
     name = "Course Review List & Create"
     serializer_class = CourseReviewSerializer
     pagination_class = StandardPageNumberPagination
+    throttle_scope = "standard"
+    permission_classes = [permissions.IsAuthenticated]
     queryset = CourseReview.objects.all()
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ["rating", "created_at"]
+    ordering = ["-rating"]
+
+    def create(self, request, *args, **kwargs):
+        context = {
+            "request": self.request,
+        }
+        serializer = self.get_serializer(data=request.data, context=context)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(
+            serializer.data, status=status.HTTP_201_CREATED, headers=headers
+        )
 
     def perform_create(self, serializer):
         """
@@ -61,7 +86,7 @@ class ReviewListCreateAV(generics.ListCreateAPIView):
         pk = self.kwargs.get("pk")
         course = Course.objects.get(pk=pk)
 
-        user = serializer.validated_data["user_id"]
+        user = self.request.user
         review_queryset = CourseReview.objects.filter(course_id=course, user_id=user)
 
         if review_queryset.exists():
@@ -88,4 +113,6 @@ class ReviewDeleteUpdateAV(generics.RetrieveUpdateDestroyAPIView):
 
     name = "Course Review Read & Update & Destroy"
     serializer_class = CourseReviewSerializer
+    permission_classes = [IsOwner]
+    throttle_scope = "standard"
     queryset = CourseReview.objects.all()
