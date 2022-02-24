@@ -14,8 +14,12 @@ black = "*"
 isort = "*"
 django-cors-headers = "*"
 drf-yasg = "*"
+django-allauth = "*"
+psycopg2 = "*"
+requests = "*"
+faker = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.10"
+python_version = "3"
