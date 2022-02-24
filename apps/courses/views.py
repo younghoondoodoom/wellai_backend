@@ -1,13 +1,18 @@
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions, status
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 
 from apps.cores.paginations import StandardPageNumberPagination
 from apps.cores.permissions import IsOwner
 
-from .models import Course, CourseReview, Exercise
-from .serializers import CourseReviewSerializer, CourseSerializer, ExerciseSerializer
+from .models import BookMark, Course, CourseReview, Exercise
+from .serializers import (
+    BookMarkSerializer,
+    CourseReviewSerializer,
+    CourseSerializer,
+    ExerciseSerializer,
+)
 
 # Create your views here.
 
@@ -54,7 +59,7 @@ class CourseDetailAV(generics.RetrieveAPIView):
 
 class ReviewListCreateAV(generics.ListCreateAPIView):
     """
-    코스 리뷰 리스트 및 생성
+    코스 리뷰 리스트 및 생성(ordering 추가)
     """
 
     name = "Course Review List & Create"
@@ -83,8 +88,8 @@ class ReviewListCreateAV(generics.ListCreateAPIView):
         """
         코스 평균 평점에 리뷰 평점을 반영
         """
-        pk = self.kwargs.get("pk")
-        course = Course.objects.get(pk=pk)
+        course_id = self.kwargs.get("pk")
+        course = Course.objects.get(pk=course_id)
 
         user = self.request.user
         review_queryset = CourseReview.objects.filter(course_id=course, user_id=user)
@@ -111,8 +116,46 @@ class ReviewDeleteUpdateAV(generics.RetrieveUpdateDestroyAPIView):
     코스 리뷰 삭제 및 업데이트
     """
 
-    name = "Course Review Read & Update & Destroy"
+    name = "Course Review Read & Update & Delete"
     serializer_class = CourseReviewSerializer
     permission_classes = [IsOwner]
     throttle_scope = "standard"
     queryset = CourseReview.objects.all()
+
+
+class BookMarkListCreateAV(generics.ListCreateAPIView):
+    """
+    북마크 생성, 조회
+    """
+
+    name = "Course BookMark Create"
+    serializer_class = BookMarkSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "standard"
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = BookMark.objects.filter(user_id=user)
+        return queryset
+
+    def perform_create(self, serializer):
+        course_id = serializer.validated_data["course_id"]
+        user = self.request.user
+        bookmark_queryset = BookMark.objects.filter(user_id=user, course_id=course_id)
+
+        if bookmark_queryset.exists():
+            raise ValidationError("이미 이 코스를 북마크 하셨습니다!")
+
+        serializer.save()
+
+
+class BookMarkDeleteAV(generics.DestroyAPIView):
+    """
+    북마크 삭제
+    """
+
+    name = "Course Bookmark Delete"
+    serializer = BookMarkSerializer
+    permission_classes = [IsOwner]
+    throttle_scope = "standard"
+    queryset = BookMark.objects.all()

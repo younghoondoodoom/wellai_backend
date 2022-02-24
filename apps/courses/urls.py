@@ -1,6 +1,8 @@
 from django.urls import path
 
 from .views import (
+    BookMarkDeleteAV,
+    BookMarkListCreateAV,
     CourseDetailAV,
     CourseListAV,
     ExerciseDetailAV,
@@ -14,6 +16,10 @@ urlpatterns = [
     path("<int:pk>", CourseDetailAV.as_view(), name="course-detail"),
     path("<int:pk>/review", ReviewListCreateAV.as_view(), name="review-list-create"),
     path(
-        "review/<int:pk>", ReviewDeleteUpdateAV.as_view(), name="review-update-destroy"
+        "review/<int:pk>", ReviewDeleteUpdateAV.as_view(), name="review-update-delete"
+    ),
+    path("bookmark", BookMarkListCreateAV.as_view(), name="course-bookmark"),
+    path(
+        "bookmark/<int:pk>", BookMarkDeleteAV.as_view(), name="course-bookmark-delete"
     ),
 ]

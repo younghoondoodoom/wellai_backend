@@ -8,10 +8,10 @@ from apps.users.models import User
 
 
 class Tag(models.Model):
-    tag = models.CharField(max_length=30, verbose_name="해시태그")
+    tag_name = models.CharField(max_length=30, verbose_name="해시태그")
 
     def __str__(self):
-        return self.tag
+        return self.tag_name
 
 
 class Exercise(models.Model):
@@ -29,10 +29,12 @@ class Course(models.Model):
     exercises = models.ManyToManyField(
         Exercise, related_name="exercises", verbose_name="구성 운동"
     )
-    img_key = models.CharField(max_length=100)
+    img_url = models.CharField(max_length=100, unique=True)
     avg_rating = models.FloatField(default=0, verbose_name="평균 평점")
     count_review = models.IntegerField(default=0, verbose_name="리뷰 개수")
-    hash_tag = models.ManyToManyField(Tag, related_name="hash_tag", verbose_name="해쉬태그")
+    hash_tag = models.ManyToManyField(
+        Tag, related_name="hash_tag", verbose_name="해쉬태그", blank=True
+    )
 
     class Meta:
         ordering = ["avg_rating", "course_name"]
@@ -63,19 +65,19 @@ class CourseReview(TimeStampModel, DeleteModel):
         return str(self.course_id) + " - " + self.user_id.nickname
 
 
-class CourseLike(TimeStampModel):
+class BookMark(TimeStampModel):
     user_id = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="courselike_user",
+        related_name="bookmark_user",
         verbose_name="유저",
     )
     course_id = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name="courselike_course",
+        related_name="bookmark_course",
         verbose_name="코스",
     )
 
     def __str__(self):
-        return self.user_id.nickname + " - " + self.course_id
+        return self.user_id.nickname + " - " + str(self.course_id)
