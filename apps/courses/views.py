@@ -1,3 +1,5 @@
+from types import NoneType
+
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions, status
 from rest_framework.exceptions import ValidationError
@@ -5,6 +7,7 @@ from rest_framework.response import Response
 
 from apps.cores.paginations import StandardPageNumberPagination
 from apps.cores.permissions import IsOwner
+from apps.users.models import UserOption
 
 from .models import BookMark, Course, CourseReview, Exercise
 from .serializers import (
@@ -17,7 +20,7 @@ from .serializers import (
 # Create your views here.
 
 
-class ExerciseDetailAV(generics.RetrieveAPIView):
+class ExerciseDetailView(generics.RetrieveAPIView):
     """
     운동 상세
     """
@@ -30,7 +33,7 @@ class ExerciseDetailAV(generics.RetrieveAPIView):
     queryset = Exercise.objects.all()
 
 
-class CourseListAV(generics.ListAPIView):
+class CourseListView(generics.ListAPIView):
     """
     코스 리스트(검색 포함)
     """
@@ -45,7 +48,7 @@ class CourseListAV(generics.ListAPIView):
     search_fields = ["course_name", "hash_tag__tag"]
 
 
-class CourseDetailAV(generics.RetrieveAPIView):
+class CourseDetailView(generics.RetrieveAPIView):
     """
     코스의 상세정보(리뷰 미포함)
     """
@@ -57,7 +60,7 @@ class CourseDetailAV(generics.RetrieveAPIView):
     queryset = Course.objects.all()
 
 
-class ReviewListCreateAV(generics.ListCreateAPIView):
+class ReviewListCreateView(generics.ListCreateAPIView):
     """
     코스 리뷰 리스트 및 생성(ordering 추가)
     """
@@ -71,18 +74,6 @@ class ReviewListCreateAV(generics.ListCreateAPIView):
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["rating", "created_at"]
     ordering = ["-rating"]
-
-    def create(self, request, *args, **kwargs):
-        context = {
-            "request": self.request,
-        }
-        serializer = self.get_serializer(data=request.data, context=context)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
-        headers = self.get_success_headers(serializer.data)
-        return Response(
-            serializer.data, status=status.HTTP_201_CREATED, headers=headers
-        )
 
     def perform_create(self, serializer):
         """
@@ -111,7 +102,7 @@ class ReviewListCreateAV(generics.ListCreateAPIView):
         serializer.save()
 
 
-class ReviewDeleteUpdateAV(generics.RetrieveUpdateDestroyAPIView):
+class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     """
     코스 리뷰 삭제 및 업데이트
     """
@@ -123,7 +114,7 @@ class ReviewDeleteUpdateAV(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseReview.objects.all()
 
 
-class BookMarkListCreateAV(generics.ListCreateAPIView):
+class BookMarkListCreateView(generics.ListCreateAPIView):
     """
     북마크 생성, 조회
     """
@@ -149,7 +140,7 @@ class BookMarkListCreateAV(generics.ListCreateAPIView):
         serializer.save()
 
 
-class BookMarkDeleteAV(generics.DestroyAPIView):
+class BookMarkDeleteView(generics.DestroyAPIView):
     """
     북마크 삭제
     """
@@ -159,3 +150,57 @@ class BookMarkDeleteAV(generics.DestroyAPIView):
     permission_classes = [IsOwner]
     throttle_scope = "standard"
     queryset = BookMark.objects.all()
+
+
+class CourseRecommendView(generics.ListAPIView):
+    """
+    코스 추천
+    """
+
+    name = "Course Recommendation"
+    serializer_class = CourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "standard"
+
+    def get_queryset(self):
+        user = self.request.user
+        user_option = UserOption.objects.get(user_id=user)
+        course = Course.objects.all()
+        queryset = None
+        if user_option.stand:  # must fix: model 변경 후 반드시 수정
+            queryset = course.order_by("-stand_count")[:5]
+        if user_option.sit:
+            qs = course.order_by("-sit_count")[:5]
+            if queryset is None:
+                queryset = qs
+            else:
+                queryset = queryset | qs
+        if user_option.balance:
+            qs = course.order_by("-balance_count")[:5]
+            if queryset is None:
+                queryset = qs
+            else:
+                queryset = queryset | qs
+        if user_option.core:
+            qs = course.order_by("-core_count")[:5]
+            if queryset is None:
+                queryset = qs
+            else:
+                queryset = queryset | qs
+        if user_option.leg:
+            qs = course.order_by("-leg_count")[:5]
+            if queryset is None:
+                queryset = qs
+            else:
+                queryset = queryset | qs
+        if user_option.back:
+            qs = course.order_by("-back_count")[:5]
+            if queryset is None:
+                queryset = qs
+            else:
+                queryset = queryset | qs
+
+        if queryset is None:
+            return course.order_by("?")
+
+        return queryset.order_by("?")[0:1]
