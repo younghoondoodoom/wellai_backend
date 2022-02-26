@@ -2,6 +2,7 @@ from rest_framework import filters, generics, permissions
 from rest_framework.exceptions import ValidationError
 
 from apps.cores.paginations import StandardPageNumberPagination
+from apps.cores.permissions import IsOwner
 
 from .models import Course, CourseReview
 from .serializers import CourseReviewSerializer
@@ -47,3 +48,15 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         course.save()
 
         serializer.save()
+
+
+class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    코스 리뷰 삭제 및 업데이트
+    """
+
+    name = "Course Review Read & Update & Delete"
+    serializer_class = CourseReviewSerializer
+    permission_classes = [IsOwner]
+    throttle_scope = "standard"
+    queryset = CourseReview.objects.all()
