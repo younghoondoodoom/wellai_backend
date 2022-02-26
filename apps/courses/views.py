@@ -32,3 +32,15 @@ class CourseListView(generics.ListAPIView):
     queryset = Course.objects.all()
     filter_backends = [filters.SearchFilter]
     search_fields = ["course_name", "hash_tag__tag"]
+
+
+class CourseDetailView(generics.RetrieveAPIView):
+    """
+    코스의 상세정보(리뷰 미포함)
+    """
+
+    name = "Course Detail"
+    serializer_class = CourseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "standard"
+    queryset = Course.objects.all()
