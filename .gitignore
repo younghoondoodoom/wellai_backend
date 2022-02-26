@@ -315,4 +315,4 @@ $RECYCLE.BIN/
 .static
 
 ### 배포시 꼭 삭제
-# migrations
+migrations
