@@ -1,3 +1,7 @@
 from django.urls import path
 
-urlpatterns = []
+from .views import ExerciseDetailView
+
+urlpatterns = [
+    path("exercise/<int:pk>", ExerciseDetailView.as_view(), name="exercise-detail"),
+]
