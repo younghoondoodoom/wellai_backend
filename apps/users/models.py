@@ -150,12 +150,12 @@ class UserOption(TimeStampModel, models.Model):
     )
     height = models.PositiveSmallIntegerField(default=0, verbose_name="키")
     weight = models.PositiveSmallIntegerField(default=0, verbose_name="몸무게")
-    stand = models.BooleanField(default=False, verbose_name="서서")
-    sit = models.BooleanField(default=False, verbose_name="앉아서")
-    balance = models.BooleanField(default=False, verbose_name="밸런스")
-    core = models.BooleanField(default=False, verbose_name="코어")
-    leg = models.BooleanField(default=False, verbose_name="다리")
-    back = models.BooleanField(default=False, verbose_name="등")
+    is_stand = models.BooleanField(default=False, verbose_name="서서")
+    is_sit = models.BooleanField(default=False, verbose_name="앉아서")
+    is_balance = models.BooleanField(default=False, verbose_name="밸런스")
+    is_core = models.BooleanField(default=False, verbose_name="코어")
+    is_leg = models.BooleanField(default=False, verbose_name="다리")
+    is_back = models.BooleanField(default=False, verbose_name="등")
 
     def __str__(self):
         return f"{self.user_id}"

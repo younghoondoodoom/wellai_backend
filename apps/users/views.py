@@ -93,12 +93,12 @@ class UserOptionUpdateView(APIView):
             user.gender = request.data["gender"]
             user.height = request.data["height"]
             user.weight = request.data["weight"]
-            user.stand = request.data["stand"]
-            user.sit = request.data["sit"]
-            user.balance = request.data["balance"]
-            user.core = request.data["core"]
-            user.leg = request.data["leg"]
-            user.back = request.data["back"]
+            user.is_stand = request.data["stand"]
+            user.is_sit = request.data["sit"]
+            user.is_balance = request.data["balance"]
+            user.is_core = request.data["core"]
+            user.is_leg = request.data["leg"]
+            user.is_back = request.data["back"]
             user.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:

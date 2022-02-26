@@ -1,9 +1,6 @@
-from types import NoneType
-
 from django.utils.translation import gettext_lazy as _
-from rest_framework import filters, generics, permissions, status
+from rest_framework import filters, generics, permissions
 from rest_framework.exceptions import ValidationError
-from rest_framework.response import Response
 
 from apps.cores.paginations import StandardPageNumberPagination
 from apps.cores.permissions import IsOwner
@@ -35,7 +32,7 @@ class ExerciseDetailView(generics.RetrieveAPIView):
 
 class CourseListView(generics.ListAPIView):
     """
-    코스 리스트(검색 포함)
+    코스 리스트(검색 기능 포함)
     """
 
     name = "Course List"
@@ -62,7 +59,7 @@ class CourseDetailView(generics.RetrieveAPIView):
 
 class ReviewListCreateView(generics.ListCreateAPIView):
     """
-    코스 리뷰 리스트 및 생성(ordering 추가)
+    코스 리뷰 리스트 및 생성(정렬 기능 포함)
     """
 
     name = "Course Review List & Create"
@@ -167,33 +164,33 @@ class CourseRecommendView(generics.ListAPIView):
         user_option = UserOption.objects.get(user_id=user)
         course = Course.objects.all()
         queryset = None
-        if user_option.stand:  # must fix: model 변경 후 반드시 수정
+        if user_option.is_stand:  # must fix: model 변경 후 반드시 수정
             queryset = course.order_by("-stand_count")[:5]
-        if user_option.sit:
+        if user_option.is_sit:
             qs = course.order_by("-sit_count")[:5]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
-        if user_option.balance:
+        if user_option.is_balance:
             qs = course.order_by("-balance_count")[:5]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
-        if user_option.core:
+        if user_option.is_core:
             qs = course.order_by("-core_count")[:5]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
-        if user_option.leg:
+        if user_option.is_leg:
             qs = course.order_by("-leg_count")[:5]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
-        if user_option.back:
+        if user_option.is_back:
             qs = course.order_by("-back_count")[:5]
             if queryset is None:
                 queryset = qs

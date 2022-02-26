@@ -43,12 +43,12 @@ class MyUserOptionAdmin(admin.ModelAdmin):
         "gender",
         "height",
         "weight",
-        "stand",
-        "sit",
-        "balance",
-        "core",
-        "leg",
-        "back",
+        "is_stand",
+        "is_sit",
+        "is_balance",
+        "is_core",
+        "is_leg",
+        "is_back",
         "modified_at",
     ]
     fieldsets = (
@@ -65,7 +65,16 @@ class MyUserOptionAdmin(admin.ModelAdmin):
         ),
         (
             _("favorite exercise"),
-            {"fields": ("stand", "sit", "balance", "core", "leg", "back")},
+            {
+                "fields": (
+                    "is_stand",
+                    "is_sit",
+                    "is_balance",
+                    "is_core",
+                    "is_leg",
+                    "is_back",
+                )
+            },
         ),
     )
 
