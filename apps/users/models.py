@@ -120,3 +120,40 @@ class UserOption(TimeStampModel, models.Model):
 
     def __str__(self):
         return f"{self.user_id}"
+
+
+class UserDailyRecord(TimeStampModel, models.Model):
+    today = timezone.now()
+
+    user_id = models.ForeignKey(
+        User,
+        related_name="daily_record",
+        on_delete=models.CASCADE,
+        db_column="email",
+    )
+    exercise_date = models.CharField(
+        default=today.strftime("%Y-%m-%d"),
+        max_length=15,
+        editable=False,
+        verbose_name="운동날짜",
+    )
+    # 일~토 : 0~6
+    exercise_day = models.PositiveSmallIntegerField(
+        default=int(today.strftime("%w")), editable=False, verbose_name="요일"
+    )
+    exercise_duration = models.PositiveSmallIntegerField(
+        default=0, verbose_name="일별 총 운동시간"
+    )
+    calories_total = models.PositiveSmallIntegerField(
+        default=0, verbose_name="일별 총 소모칼로리"
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_id", "exercise_date"], name="users_userdaily_history"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.user_id} - {self.exercise_date}"
