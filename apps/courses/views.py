@@ -29,3 +29,15 @@ class BookMarkListCreateView(generics.ListCreateAPIView):
             raise ValidationError("이미 이 코스를 북마크 하셨습니다!")
 
         serializer.save()
+
+
+class BookMarkDeleteView(generics.DestroyAPIView):
+    """
+    북마크 삭제
+    """
+
+    name = "Course Bookmark Delete"
+    serializer = BookMarkSerializer
+    permission_classes = [IsOwner]
+    throttle_scope = "standard"
+    queryset = BookMark.objects.all()
