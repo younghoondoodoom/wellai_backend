@@ -1,3 +1,7 @@
 from django.urls import path
 
-urlpatterns = []
+from .views import CourseRecommendView
+
+urlpatterns = [
+    path("recommend", CourseRecommendView.as_view(), name="course-recommend"),
+]
