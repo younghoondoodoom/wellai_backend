@@ -1,3 +1,7 @@
 from django.urls import path
 
-urlpatterns = []
+from .views import UserRegisterCheckView
+
+urlpatterns = [
+    path("check", UserRegisterCheckView.as_view(), name="user-check"),
+]
