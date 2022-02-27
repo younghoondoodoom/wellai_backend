@@ -3,7 +3,7 @@ import random
 from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core.validators import EmailValidator
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from faker import Faker
@@ -84,6 +84,15 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampModel, DeleteModel):
 
     USERNAME_FIELD = "email"
     objects = CustomUserManager()
+
+    @classmethod
+    def create(cls, email, password, options):
+        user = cls(email=email, password=password)
+        user_option = UserOption(user_id=user, **options)
+        with transaction.atomic():
+            user.save()
+            user_option.save()
+        return user
 
     def __str__(self):
         return self.email
