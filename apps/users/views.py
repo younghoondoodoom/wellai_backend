@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from apps.cores.exceptions import EmailExistException, PasswordCheckException
 
 from .models import User
-from .serializers import UserRegisterCheckSerializer
+from .serializers import UserRegisterCheckSerializer, UserRegisterSerializer
 
 
 class UserRegisterCheckView(generics.CreateAPIView):
@@ -23,3 +23,13 @@ class UserRegisterCheckView(generics.CreateAPIView):
             raise EmailExistException()
         except ObjectDoesNotExist:
             return Response(status=status.HTTP_200_OK)
+
+
+class UserRegisterView(generics.CreateAPIView):
+    serializer_class = UserRegisterSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = UserRegisterSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        User.create(**request.data)
+        return Response(status=status.HTTP_201_CREATED)
