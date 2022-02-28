@@ -2,7 +2,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from apps.cores.exceptions import EmailExistException, PasswordCheckException
+from apps.users.exceptions import EmailExistException, PasswordCheckException
 
 from .models import User
 from .serializers import UserRegisterCheckSerializer
