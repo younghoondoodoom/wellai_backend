@@ -69,7 +69,7 @@ class CourseReview(TimeStampModel, DeleteModel):
     )
 
     def __str__(self):
-        return str(self.course_id) + " - " + self.user_id.nickname
+        return f"{self.course_id} - {self.user_id.nickname}"
 
 
 class BookMark(TimeStampModel):
@@ -87,4 +87,4 @@ class BookMark(TimeStampModel):
     )
 
     def __str__(self):
-        return self.user_id.nickname + " - " + str(self.course_id)
+        return f"{self.user_id.nickname} - {self.course_id}"
