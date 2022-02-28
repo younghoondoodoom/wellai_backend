@@ -25,7 +25,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
 
     def perform_create(self, serializer):
         """
-        코스 평균 평점에 리뷰 평점을 반영
+        코스 평균 평점, 평점 개수에 셍성되는 리뷰를 반영
         """
         course = serializer.validated_data["course_id"]
         user = self.request.user
@@ -59,6 +59,9 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     queryset = CourseReview.objects.all()
 
     def perform_destroy(self, review):
+        """
+        코스 평균 평점, 리뷰 개수에 삭제되는 리뷰를 반영
+        """
         course = review.course_id
         count_review = course.count_review
 
@@ -73,3 +76,24 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
         course.save()
 
         review.delete()
+
+    def perform_update(self, serializer):
+        """
+        코스 평균 평점에 수정되는 리뷰를 반영
+        """
+        course = serializer.validated_data["course_id"]
+        user = self.request.user
+        review = user.user_review.get(course_id=course)
+        count_review = course.count_review
+
+        if count_review == 1:
+            course.avg_rating = serializer.validated_data["rating"]
+        else:
+            course.avg_rating = round(
+                course.avg_rating * count_review
+                - review.rating
+                + serializer.validated_data["rating"] / count_review
+            )
+        course.save()
+
+        serializer.save()
