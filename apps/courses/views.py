@@ -160,13 +160,13 @@ class BookMarkListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = BookMark.objects.filter(user_id=user)
+        queryset = user.user_bookmark.all()
         return queryset
 
     def perform_create(self, serializer):
-        course_id = serializer.validated_data["course_id"]
+        course = serializer.validated_data["course_id"]
         user = self.request.user
-        bookmark_queryset = BookMark.objects.filter(user_id=user, course_id=course_id)
+        bookmark_queryset = user.user_bookmark.filter(course_id=course)
 
         if bookmark_queryset.exists():
             raise ValidationError("이미 이 코스를 북마크 하셨습니다!")
