@@ -23,4 +23,4 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = "__all__"
+        exclude = ["review_user", "bookmark_user"]
