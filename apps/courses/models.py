@@ -34,6 +34,12 @@ class Course(models.Model):
     hash_tag = models.ManyToManyField(
         Tag, related_name="tag_course", verbose_name="해쉬태그", blank=True
     )
+    review_user = models.ManyToManyField(
+        User, related_name="user_course", verbose_name="유저 코스", through="CourseReview"
+    )
+    bookmark_user = models.ManyToManyField(
+        User, related_name="bookmark_course", verbose_name="북마크 코스", through="BookMark"
+    )
     stand_count = models.IntegerField(default=0, verbose_name="서서 개수")
     sit_count = models.IntegerField(default=0, verbose_name="앉아서 개수")
     balance_count = models.IntegerField(default=0, verbose_name="밸런스 개수")
