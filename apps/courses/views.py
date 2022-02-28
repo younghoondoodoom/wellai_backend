@@ -107,6 +107,22 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     throttle_scope = "standard"
     queryset = CourseReview.objects.all()
 
+    def perform_destroy(self, review):
+        course = review.course_id
+        count_review = course.count_review
+
+        if count_review == 1:
+            course.avg_rating = 0
+        else:
+            course.avg_rating = round(
+                (course.avg_rating * count_review - review.rating) / (count_review - 1),
+                1,
+            )
+        course.count_review -= 1
+        course.save()
+
+        review.delete()
+
 
 class BookMarkListCreateView(generics.ListCreateAPIView):
     """
