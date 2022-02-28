@@ -28,13 +28,16 @@ class Exercise(models.Model):
 class Course(models.Model):
     course_name = models.CharField(max_length=50, unique=True, verbose_name="코스 이름")
     exercises = models.ManyToManyField(
-        Exercise, related_name="exercises", verbose_name="구성 운동"
+        Exercise, related_name="course", verbose_name="구성 운동"
     )
     img_url = models.CharField(max_length=100, unique=True)
     avg_rating = models.FloatField(default=0, verbose_name="평균 평점")
     count_review = models.IntegerField(default=0, verbose_name="리뷰 개수")
     hash_tag = models.ManyToManyField(
-        Tag, related_name="hash_tag", verbose_name="해쉬태그", blank=True
+        Tag, related_name="tag_course", verbose_name="해쉬태그", blank=True
+    )
+    user = models.ManyToManyField(
+        User, related_name="user_course", verbose_name="유저 코스", through="CourseReview"
     )
     stand_count = models.IntegerField(default=0, verbose_name="서서 개수")
     sit_count = models.IntegerField(default=0, verbose_name="앉아서 개수")
@@ -54,13 +57,13 @@ class CourseReview(TimeStampModel, DeleteModel):
     user_id = models.ForeignKey(
         User,
         on_delete=models.DO_NOTHING,
-        related_name="reviewer",
+        related_name="user_review",
         verbose_name="유저",
     )
     course_id = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name="review_course",
+        related_name="course_review",
         verbose_name="코스",
     )
     content = models.TextField(max_length=300, verbose_name="내용")
@@ -76,13 +79,13 @@ class BookMark(TimeStampModel):
     user_id = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="bookmark_user",
+        related_name="user_bookmark",
         verbose_name="유저",
     )
     course_id = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name="bookmark_course",
+        related_name="course_bookmark",
         verbose_name="코스",
     )
 
