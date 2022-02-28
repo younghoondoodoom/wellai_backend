@@ -36,7 +36,7 @@ class Course(models.Model):
     hash_tag = models.ManyToManyField(
         Tag, related_name="tag_course", verbose_name="해쉬태그", blank=True
     )
-    user = models.ManyToManyField(
+    review_user = models.ManyToManyField(
         User, related_name="user_course", verbose_name="유저 코스", through="CourseReview"
     )
     stand_count = models.IntegerField(default=0, verbose_name="서서 개수")

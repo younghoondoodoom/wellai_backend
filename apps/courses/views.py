@@ -76,18 +76,15 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         """
         코스 평균 평점에 리뷰 평점을 반영
         """
-        course_id = self.kwargs.get("pk")
-        course = Course.objects.get(pk=course_id)
-
+        course = serializer.validated_data["course_id"]
         user = self.request.user
-        review_queryset = CourseReview.objects.filter(course_id=course, user_id=user)
+        review_queryset = user.user_review.filter(course_id=course)
 
         if review_queryset.exists():
             raise ValidationError("이미 이 코스에 대한 리뷰가 있습니다!")
 
         if course.count_review == 0:
             course.avg_rating = serializer.validated_data["rating"]
-
         else:
             course.avg_rating = round(
                 (course.avg_rating + serializer.validated_data["rating"]) / 2, 1
