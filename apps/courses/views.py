@@ -198,7 +198,7 @@ class CourseRecommendView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        user_option = UserOption.objects.get(user_id=user)
+        user_option = user.option
         course = Course.objects.all()
         queryset = None
         if user_option.is_stand:  # must fix: model 변경 후 반드시 수정
