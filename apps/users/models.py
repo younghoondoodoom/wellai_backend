@@ -99,7 +99,7 @@ class UserOption(TimeStampModel, models.Model):
         User,
         related_name="option",
         on_delete=models.CASCADE,
-        db_column="email",
+        db_column="user_id",
     )
     gender = models.CharField(
         blank=True,
@@ -129,13 +129,10 @@ class UserDailyRecord(TimeStampModel, models.Model):
         User,
         related_name="daily_record",
         on_delete=models.CASCADE,
-        db_column="email",
+        db_column="user_id",
     )
-    exercise_date = models.CharField(
-        default=today.strftime("%Y-%m-%d"),
-        max_length=15,
-        editable=False,
-        verbose_name="운동날짜",
+    exercise_date = models.DateField(
+        auto_now_add=True, editable=True, verbose_name="운동 날짜"
     )
     # 일~토 : 0~6
     exercise_day = models.PositiveSmallIntegerField(
