@@ -116,7 +116,6 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
         """
         course = review.course_id
         count_review = course.count_review
-
         if count_review == 1:
             course.avg_rating = 0
         else:
@@ -134,9 +133,8 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
         """
         코스 평균 평점에 수정되는 리뷰를 반영
         """
-        course = serializer.validated_data["course_id"]
-        user = self.request.user
-        review = user.user_review.get(course_id=course)
+        review = self.get_object()
+        course = review.course_id
         count_review = course.count_review
 
         if count_review == 1:
