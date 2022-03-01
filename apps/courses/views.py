@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions
 from rest_framework.exceptions import ValidationError
@@ -72,6 +73,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     ordering_fields = ["rating", "created_at"]
     ordering = ["-rating"]
 
+    @transaction.atomic
     def perform_create(self, serializer):
         """
         코스 평균 평점, 평점 개수에 셍성되는 리뷰를 반영
@@ -107,6 +109,7 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     throttle_scope = "standard"
     queryset = CourseReview.objects.all()
 
+    @transaction.atomic
     def perform_destroy(self, review):
         """
         코스 평균 평점, 리뷰 개수에 삭제되는 리뷰를 반영
@@ -126,6 +129,7 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
 
         review.delete()
 
+    @transaction.atomic
     def perform_update(self, serializer):
         """
         코스 평균 평점에 수정되는 리뷰를 반영
@@ -163,6 +167,7 @@ class BookMarkListCreateView(generics.ListCreateAPIView):
         queryset = user.user_bookmark.all()
         return queryset
 
+    @transaction.atomic
     def perform_create(self, serializer):
         course = serializer.validated_data["course_id"]
         user = self.request.user
