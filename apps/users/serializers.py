@@ -1,8 +1,10 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import EmailValidator
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from rest_framework import serializers
 
 from .models import User, UserDailyRecord, UserOption
+from .utils import get_calories
 from .validators import PasswordValidator
 
 
@@ -50,6 +52,30 @@ class UserDailyRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDailyRecord
         fields = "__all__"
+        read_only_fields = ("user_id", "created_at", "calories_total")
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        exercise_duration = validated_data["exercise_duration"]
+        exercise_date = validated_data["exercise_date"]
+        user_option = UserOption.objects.get(user_id=user)
+        calories = get_calories(user_option.weight, exercise_duration)
+        try:
+            user_record = UserDailyRecord.objects.get(
+                Q(user_id=user) & Q(exercise_date=exercise_date)
+            )
+        except ObjectDoesNotExist:
+            user_record = UserDailyRecord.objects.create(
+                user_id=user,
+                calories_total=calories,
+                exercise_date=exercise_date,
+                exercise_duration=exercise_duration,
+            )
+            return user_record
+        user_record.calories_total += calories
+        user_record.exercise_duration += exercise_duration
+        user_record.save()
+        return user_record
 
 
 class UserWeeklyRecordSerializer(serializers.ModelSerializer):
