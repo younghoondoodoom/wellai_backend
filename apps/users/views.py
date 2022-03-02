@@ -1,15 +1,20 @@
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Prefetch, Q
+from django.utils import timezone
 from rest_framework import generics, mixins, permissions, status
 from rest_framework.response import Response
 
 from apps.cores.permissions import IsOwner
 from apps.users.exceptions import EmailExistException, PasswordCheckException
 
-from .models import User, UserOption
+from .models import User, UserDailyRecord, UserOption
 from .serializers import (
+    DateCheckSerializer,
+    UserMonthlyRecordSerializer,
     UserOptionSerializer,
     UserRegisterCheckSerializer,
     UserRegisterSerializer,
+    UserWeeklyRecordSerializer,
 )
 
 
@@ -51,3 +56,39 @@ class UserOptionUpdateView(generics.RetrieveUpdateAPIView):
             instance._prefetched_objects_cache = {}
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserMonthlyRecordView(generics.ListAPIView):
+    serializer_class = UserMonthlyRecordSerializer
+    permission_classes = [IsOwner]
+
+    def get_queryset(self):
+        date_serializer = DateCheckSerializer(data=self.request.query_params)
+        date_serializer.is_valid(raise_exception=True)
+        queryset = User.objects.filter(id=self.request.user.id).prefetch_related(
+            Prefetch(
+                "daily_record",
+                queryset=UserDailyRecord.objects.filter(
+                    exercise_date__year=self.request.query_params["year"],
+                    exercise_date__month=self.request.query_params["month"],
+                ),
+            )
+        )
+        return queryset
+
+
+class UserWeeklyRecordView(generics.ListAPIView):
+    serializer_class = UserWeeklyRecordSerializer
+    permission_classes = [IsOwner]
+    week = timezone.now().isocalendar()[1]
+
+    def get_queryset(self):
+        queryset = User.objects.filter(id=self.request.user.id).prefetch_related(
+            Prefetch(
+                "daily_record",
+                queryset=UserDailyRecord.objects.filter(
+                    exercise_week=self.week,
+                ),
+            )
+        )
+        return queryset

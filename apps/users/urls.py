@@ -6,7 +6,12 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from .views import UserOptionUpdateView, UserRegisterCheckView
+from .views import (
+    UserMonthlyRecordView,
+    UserOptionUpdateView,
+    UserRegisterCheckView,
+    UserWeeklyRecordView,
+)
 
 urlpatterns = [
     path("login", TokenObtainPairView.as_view(), name="login"),
@@ -15,4 +20,6 @@ urlpatterns = [
     path("token/verify", TokenVerifyView.as_view(), name="token-verify"),
     path("check", UserRegisterCheckView.as_view(), name="user-check"),
     path("option", UserOptionUpdateView.as_view(), name="user-option-update"),
+    path("records/month/", UserMonthlyRecordView.as_view(), name="monthly-records"),
+    path("records/week", UserWeeklyRecordView.as_view(), name="weekly-records"),
 ]
