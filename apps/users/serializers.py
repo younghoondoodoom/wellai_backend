@@ -1,5 +1,5 @@
 from django.core.validators import EmailValidator
-from django.db.models import Q, Sum
+from django.db.models import Sum
 from rest_framework import serializers
 
 from .models import User, UserDailyRecord, UserOption
