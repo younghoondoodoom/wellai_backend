@@ -4,6 +4,8 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core.validators import EmailValidator
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from faker import Faker
@@ -134,9 +136,8 @@ class UserDailyRecord(TimeStampModel, models.Model):
     exercise_date = models.DateField(
         auto_now_add=True, editable=True, verbose_name="운동 날짜"
     )
-    # 일~토 : 0~6
-    exercise_day = models.PositiveSmallIntegerField(
-        default=int(today.strftime("%w")), editable=False, verbose_name="요일"
+    exercise_week = models.PositiveSmallIntegerField(
+        default=int(today.isocalendar()[1]), editable=False, verbose_name="주차"
     )
     exercise_duration = models.PositiveSmallIntegerField(
         default=0, verbose_name="일별 총 운동시간"
@@ -154,3 +155,9 @@ class UserDailyRecord(TimeStampModel, models.Model):
 
     def __str__(self):
         return f"{self.user_id} - {self.exercise_date}"
+
+
+@receiver(pre_save, sender=UserDailyRecord)
+def user_record_pre_save_receiver(sender, instance, *args, **kwargs):
+    exercise_date = instance.exercise_date
+    instance.exercise_week = exercise_date.isocalendar()[1]
