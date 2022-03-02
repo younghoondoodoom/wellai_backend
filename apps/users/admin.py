@@ -20,7 +20,7 @@ class MyUserRecordAdmin(admin.ModelAdmin):
         "exercise_duration",
         "calories_total",
         "exercise_date",
-        "exercise_day",
+        "exercise_week",
         "modified_at",
     ]
 
@@ -30,7 +30,7 @@ class MyUserRecordAdmin(admin.ModelAdmin):
         "calories_total",
     )
     search_fields = ["user_id"]
-    list_filter = ["exercise_date", "exercise_day"]
+    list_filter = ["exercise_date", "exercise_week"]
     ordering = ["user_id"]
 
 
