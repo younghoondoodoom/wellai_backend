@@ -93,7 +93,7 @@ class UserWeeklyRecordView(generics.ListAPIView):
                 "daily_record",
                 queryset=UserDailyRecord.objects.filter(
                     exercise_week=self.week,
-                ),
+                ).order_by("exercise_date"),
             )
         )
         return queryset
