@@ -6,7 +6,7 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from .views import UserRegisterCheckView
+from .views import UserOptionUpdateView, UserRegisterCheckView
 
 urlpatterns = [
     path("login", TokenObtainPairView.as_view(), name="login"),
@@ -14,4 +14,5 @@ urlpatterns = [
     path("token/refresh", TokenRefreshView.as_view(), name="token-refresh"),
     path("token/verify", TokenVerifyView.as_view(), name="token-verify"),
     path("check", UserRegisterCheckView.as_view(), name="user-check"),
+    path("option", UserOptionUpdateView.as_view(), name="user-option-update"),
 ]
