@@ -22,6 +22,19 @@ class UserDailyRecordSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class UserWeeklySummarySerializer(serializers.ModelSerializer):
+    records = UserDailyRecordSerializer(source="daily_record", many=True)
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "nickname",
+            "records",
+        )
+
+
 class UserMonthlyRecordSerializer(serializers.ModelSerializer):
     month_exercise_time = serializers.SerializerMethodField()
     month_calories = serializers.SerializerMethodField()
