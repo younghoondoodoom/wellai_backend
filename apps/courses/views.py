@@ -14,8 +14,6 @@ from .serializers import (
     ExerciseSerializer,
 )
 
-# Create your views here.
-
 
 class ExerciseDetailView(generics.RetrieveAPIView):
     """
