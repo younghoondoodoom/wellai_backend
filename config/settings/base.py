@@ -133,6 +133,7 @@ REST_FRAMEWORK = {
         "rest_framework.throttling.ScopedRateThrottle",
     ],
     "DEFAULT_THROTTLE_RATES": {"standard": "20/min"},
+    "EXCEPTION_HANDLER": "apps.cores.exceptions.custom_exception_handler",
 }
 
 SIMPLE_JWT = {
