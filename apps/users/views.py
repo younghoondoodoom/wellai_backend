@@ -5,22 +5,26 @@ from rest_framework import generics, mixins, permissions, status
 from apps.cores.permissions import IsOwner
 
 from .models import User, UserDailyRecord
-from .serializers import UserMonthlyRecordSerializer, UserWeeklyRecordSerializer
+from .serializers import (
+    DateCheckSerializer,
+    UserMonthlyRecordSerializer,
+    UserWeeklyRecordSerializer,
+)
 
 
 class UserMonthlyRecordView(generics.ListAPIView):
     serializer_class = UserMonthlyRecordSerializer
     permission_classes = [IsOwner]
-    current_month = timezone.now().strftime("%m")
-    current_year = timezone.now().strftime("%Y")
 
     def get_queryset(self):
+        date_serializer = DateCheckSerializer(data=self.request.query_params)
+        date_serializer.is_valid(raise_exception=True)
         queryset = User.objects.filter(id=self.request.user.id).prefetch_related(
             Prefetch(
                 "daily_record",
                 queryset=UserDailyRecord.objects.filter(
-                    exercise_date__year=self.current_year,
-                    exercise_date__month=self.current_month,
+                    exercise_date__year=self.request.query_params["year"],
+                    exercise_date__month=self.request.query_params["month"],
                 ),
             )
         )
@@ -33,7 +37,6 @@ class UserWeeklyRecordView(generics.ListAPIView):
     week = timezone.now().isocalendar()[1]
 
     def get_queryset(self):
-        print(self.week)
         queryset = User.objects.filter(id=self.request.user.id).prefetch_related(
             Prefetch(
                 "daily_record",
