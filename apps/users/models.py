@@ -4,13 +4,15 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.core.validators import EmailValidator
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from faker import Faker
 
 from apps.cores.models import DeleteModel, TimeStampModel
 
-from .validators import NicknameValidator, PasswordValidator
+from .validators import PasswordValidator
 
 
 class CustomUserManager(BaseUserManager):
@@ -77,8 +79,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampModel, DeleteModel):
     nickname = models.CharField(
         unique=True,
         max_length=64,
-        default=set_nickname(),
-        validators=[NicknameValidator()],
+        default=set_nickname,
         verbose_name="닉네임",
     )
     is_staff = models.BooleanField(default=False, verbose_name="관리자여부")
@@ -88,43 +89,6 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampModel, DeleteModel):
 
     def __str__(self):
         return self.email
-
-
-class UserDailyRecord(TimeStampModel, models.Model):
-    today = timezone.now()
-
-    user_id = models.ForeignKey(
-        User,
-        related_name="daily_record",
-        on_delete=models.CASCADE,
-        db_column="email",
-    )
-    exercise_date = models.CharField(
-        default=today.strftime("%Y-%m-%d"),
-        max_length=15,
-        editable=False,
-        verbose_name="운동날짜",
-    )
-    # 일~토 : 0~6
-    exercise_day = models.PositiveSmallIntegerField(
-        default=int(today.strftime("%w")), editable=False, verbose_name="요일"
-    )
-    exercise_total = models.PositiveSmallIntegerField(
-        default=0, verbose_name="일별 총 운동시간"
-    )
-    calories_total = models.PositiveSmallIntegerField(
-        default=0, verbose_name="일별 총 소모칼로리"
-    )
-
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(
-                fields=["user_id", "exercise_date"], name="users_userdaily_history"
-            )
-        ]
-
-    def __str__(self):
-        return f"{self.user_id} - {self.exercise_date}"
 
 
 class UserOption(TimeStampModel, models.Model):
@@ -137,7 +101,7 @@ class UserOption(TimeStampModel, models.Model):
         User,
         related_name="option",
         on_delete=models.CASCADE,
-        db_column="email",
+        db_column="user_id",
     )
     gender = models.CharField(
         blank=True,
@@ -158,3 +122,42 @@ class UserOption(TimeStampModel, models.Model):
 
     def __str__(self):
         return f"{self.user_id}"
+
+
+class UserDailyRecord(TimeStampModel, models.Model):
+    today = timezone.now()
+
+    user_id = models.ForeignKey(
+        User,
+        related_name="daily_record",
+        on_delete=models.CASCADE,
+        db_column="user_id",
+    )
+    exercise_date = models.DateField(
+        auto_now_add=True, editable=True, verbose_name="운동 날짜"
+    )
+    exercise_week = models.PositiveSmallIntegerField(
+        default=int(today.isocalendar()[1]), editable=False, verbose_name="주차"
+    )
+    exercise_duration = models.PositiveSmallIntegerField(
+        default=0, verbose_name="일별 총 운동시간"
+    )
+    calories_total = models.PositiveSmallIntegerField(
+        default=0, verbose_name="일별 총 소모칼로리"
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user_id", "exercise_date"], name="users_userdaily_history"
+            )
+        ]
+
+    def __str__(self):
+        return f"{self.user_id} - {self.exercise_date}"
+
+
+@receiver(pre_save, sender=UserDailyRecord)
+def user_record_pre_save_receiver(sender, instance, *args, **kwargs):
+    exercise_date = instance.exercise_date
+    instance.exercise_week = exercise_date.isocalendar()[1]
