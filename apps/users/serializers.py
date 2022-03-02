@@ -62,10 +62,12 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserDailyRecordSerializer(serializers.ModelSerializer):
+    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = UserDailyRecord
         fields = "__all__"
-        read_only_fields = ("user_id", "created_at", "calories_total")
+        read_only_fields = ("created_at", "calories_total")
 
     def create(self, validated_data):
         user = self.context["request"].user
