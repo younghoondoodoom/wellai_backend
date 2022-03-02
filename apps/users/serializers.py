@@ -57,3 +57,8 @@ class UserMonthlyRecordSerializer(serializers.ModelSerializer):
             "month_exercise_time",
             "month_calories",
         )
+
+
+class DateCheckSerializer(serializers.Serializer):
+    year = serializers.IntegerField()
+    month = serializers.IntegerField(min_value=1, max_value=12)
