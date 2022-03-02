@@ -22,7 +22,7 @@ class UserDailyRecordSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class UserWeeklySummarySerializer(serializers.ModelSerializer):
+class UserWeeklyRecordSerializer(serializers.ModelSerializer):
     records = UserDailyRecordSerializer(source="daily_record", many=True)
 
     class Meta:

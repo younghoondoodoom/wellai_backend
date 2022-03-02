@@ -5,7 +5,7 @@ from rest_framework import generics, mixins, permissions, status
 from apps.cores.permissions import IsOwner
 
 from .models import User, UserDailyRecord
-from .serializers import UserMonthlyRecordSerializer, UserWeeklySummarySerializer
+from .serializers import UserMonthlyRecordSerializer, UserWeeklyRecordSerializer
 
 
 class UserMonthlyRecordView(generics.ListAPIView):
@@ -28,7 +28,7 @@ class UserMonthlyRecordView(generics.ListAPIView):
 
 
 class UserWeeklyRecordView(generics.ListAPIView):
-    serializer_class = UserWeeklySummarySerializer
+    serializer_class = UserWeeklyRecordSerializer
     permission_classes = [IsOwner]
     week = timezone.now().isocalendar()[1]
 
