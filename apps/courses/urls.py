@@ -5,6 +5,7 @@ from .views import (
     BookMarkListCreateView,
     CourseDetailView,
     CourseListView,
+    CourseRecommendView,
     ExerciseDetailView,
     ReviewDeleteUpdateView,
     ReviewListCreateView,
@@ -22,4 +23,5 @@ urlpatterns = [
     path(
         "bookmark/<int:pk>", BookMarkDeleteView.as_view(), name="course-bookmark-delete"
     ),
+    path("recommendation", CourseRecommendView.as_view(), name="course-recommend"),
 ]
