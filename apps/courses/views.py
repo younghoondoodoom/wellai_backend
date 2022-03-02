@@ -1,8 +1,10 @@
+from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions
 from rest_framework.exceptions import ValidationError
 
 from apps.cores.paginations import StandardPageNumberPagination
 from apps.cores.permissions import IsOwner
+from apps.users.models import UserOption
 
 from .models import BookMark, Course, CourseReview, Exercise
 from .serializers import (
@@ -89,30 +91,6 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         course.count_review += 1
         course.save()
 
-
-class BookMarkListCreateView(generics.ListCreateAPIView):
-    """
-    북마크 생성, 조회
-    """
-
-    name = "Course BookMark Create"
-    serializer_class = BookMarkSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    throttle_scope = "standard"
-
-    def get_queryset(self):
-        user = self.request.user
-        queryset = user.user_bookmark.all()
-        return queryset
-
-    def perform_create(self, serializer):
-        course = serializer.validated_data["course_id"]
-        user = self.request.user
-        bookmark_queryset = user.user_bookmark.filter(course_id=course)
-
-        if bookmark_queryset.exists():
-            raise ValidationError("이미 이 코스를 북마크 하셨습니다!")
-
         serializer.save()
 
 
@@ -168,6 +146,32 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
         serializer.save()
 
 
+class BookMarkListCreateView(generics.ListCreateAPIView):
+    """
+    북마크 생성, 조회
+    """
+
+    name = "Course BookMark Create"
+    serializer_class = BookMarkSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_scope = "standard"
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = user.user_bookmark.all()
+        return queryset
+
+    def perform_create(self, serializer):
+        course = serializer.validated_data["course_id"]
+        user = self.request.user
+        bookmark_queryset = user.user_bookmark.filter(course_id=course)
+
+        if bookmark_queryset.exists():
+            raise ValidationError("이미 이 코스를 북마크 하셨습니다!")
+
+        serializer.save()
+
+
 class BookMarkDeleteView(generics.DestroyAPIView):
     """
     북마크 삭제
@@ -195,33 +199,33 @@ class CourseRecommendView(generics.ListAPIView):
         user_option = user.option
         course = Course.objects.all()
         queryset = None
-        if user_option.stand:  # must fix: model 변경 후 반드시 수정
+        if user_option.is_stand:
             queryset = course.order_by("-stand_count")[:5]
-        if user_option.sit:
+        if user_option.is_sit:
             qs = course.order_by("-sit_count")[:5]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
-        if user_option.balance:
+        if user_option.is_balance:
             qs = course.order_by("-balance_count")[:5]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
-        if user_option.core:
+        if user_option.is_core:
             qs = course.order_by("-core_count")[:5]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
-        if user_option.leg:
+        if user_option.is_leg:
             qs = course.order_by("-leg_count")[:5]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
-        if user_option.back:
+        if user_option.is_back:
             qs = course.order_by("-back_count")[:5]
             if queryset is None:
                 queryset = qs
