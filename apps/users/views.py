@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Prefetch, Q
 from django.utils import timezone
-from rest_framework import generics, mixins, permissions, status
+from rest_framework import generics, status
 from rest_framework.response import Response
 
 from apps.cores.permissions import IsOwner
@@ -10,6 +10,7 @@ from apps.users.exceptions import EmailExistException, PasswordCheckException
 from .models import User, UserDailyRecord, UserOption
 from .serializers import (
     DateCheckSerializer,
+    UserDailyRecordSerializer,
     UserMonthlyRecordSerializer,
     UserOptionSerializer,
     UserRegisterCheckSerializer,
@@ -92,7 +93,12 @@ class UserWeeklyRecordView(generics.ListAPIView):
                 "daily_record",
                 queryset=UserDailyRecord.objects.filter(
                     exercise_week=self.week,
-                ),
+                ).order_by("exercise_date"),
             )
         )
         return queryset
+
+
+class UserRecordUpdateView(generics.CreateAPIView):
+    serializer_class = UserDailyRecordSerializer
+    permission_classes = [IsOwner]

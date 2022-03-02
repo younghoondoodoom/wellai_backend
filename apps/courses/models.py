@@ -40,12 +40,12 @@ class Course(models.Model):
     bookmark_user = models.ManyToManyField(
         User, related_name="bookmark_course", verbose_name="북마크 코스", through="BookMark"
     )
-    stand_count = models.IntegerField(default=0, verbose_name="서서 개수")
-    sit_count = models.IntegerField(default=0, verbose_name="앉아서 개수")
-    balance_count = models.IntegerField(default=0, verbose_name="밸런스 개수")
-    core_count = models.IntegerField(default=0, verbose_name="코어 개수")
-    leg_count = models.IntegerField(default=0, verbose_name="다리 개수")
-    back_count = models.IntegerField(default=0, verbose_name="등 개수")
+    stand_count = models.PositiveSmallIntegerField(default=0, verbose_name="서서 개수")
+    sit_count = models.PositiveSmallIntegerField(default=0, verbose_name="앉아서 개수")
+    balance_count = models.PositiveSmallIntegerField(default=0, verbose_name="밸런스 개수")
+    core_count = models.PositiveSmallIntegerField(default=0, verbose_name="코어 개수")
+    leg_count = models.PositiveSmallIntegerField(default=0, verbose_name="다리 개수")
+    back_count = models.PositiveSmallIntegerField(default=0, verbose_name="등 개수")
 
     class Meta:
         ordering = ["avg_rating", "course_name"]

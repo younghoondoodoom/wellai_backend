@@ -1,8 +1,10 @@
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import EmailValidator
-from django.db.models import Sum
+from django.db.models import Q, Sum
 from rest_framework import serializers
 
 from .models import User, UserDailyRecord, UserOption
+from .utils import get_calories
 from .validators import PasswordValidator
 
 
@@ -45,11 +47,50 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         max_length=128, validators=[PasswordValidator()], write_only=True
     )
 
+    class Meta:
+        model = User
+        read_only_fields = ("nickname",)
+        fields = ("email", "nickname", "password", "options")
+
+    def create(self, validated_data):
+        options_validated_data = validated_data.pop("option")
+        user = User.objects.create_user(**validated_data)
+        options_validated_data["user_id"] = user
+        options_serializer = self.fields["options"]
+        options_serializer.create(options_validated_data)
+        return user
+
 
 class UserDailyRecordSerializer(serializers.ModelSerializer):
+    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
     class Meta:
         model = UserDailyRecord
         fields = "__all__"
+        read_only_fields = ("created_at", "calories_total")
+
+    def create(self, validated_data):
+        user = self.context["request"].user
+        exercise_duration = validated_data["exercise_duration"]
+        exercise_date = validated_data["exercise_date"]
+        user_option = UserOption.objects.get(user_id=user)
+        calories = get_calories(user_option.weight, exercise_duration)
+        try:
+            user_record = UserDailyRecord.objects.get(
+                Q(user_id=user) & Q(exercise_date=exercise_date)
+            )
+        except ObjectDoesNotExist:
+            user_record = UserDailyRecord.objects.create(
+                user_id=user,
+                calories_total=calories,
+                exercise_date=exercise_date,
+                exercise_duration=exercise_duration,
+            )
+            return user_record
+        user_record.calories_total += calories
+        user_record.exercise_duration += exercise_duration
+        user_record.save()
+        return user_record
 
 
 class UserWeeklyRecordSerializer(serializers.ModelSerializer):
