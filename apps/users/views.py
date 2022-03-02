@@ -1,7 +1,7 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Prefetch, Q
 from django.utils import timezone
-from rest_framework import generics, mixins, permissions, status
+from rest_framework import generics, status
 from rest_framework.response import Response
 
 from apps.cores.permissions import IsOwner
