@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Course, Exercise, Tag
+from .models import Course, CourseReview, Exercise, Tag
 
 
 class TagSerailizer(serializers.ModelSerializer):
@@ -24,3 +24,11 @@ class CourseSerializer(serializers.ModelSerializer):
     class Meta:
         model = Course
         exclude = ["review_user", "bookmark_user"]
+
+
+class CourseReviewSerializer(serializers.ModelSerializer):
+    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = CourseReview
+        exclude = ["is_deleted", "deleted_at"]
