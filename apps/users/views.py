@@ -35,6 +35,10 @@ class UserRegisterCheckView(generics.CreateAPIView):
             return Response(status=status.HTTP_200_OK)
 
 
+class UserRegisterView(generics.CreateAPIView):
+    serializer_class = UserRegisterSerializer
+
+
 class UserOptionUpdateView(generics.RetrieveUpdateAPIView):
     permission_classes = [IsOwner]
     serializer_class = UserOptionSerializer
