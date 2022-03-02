@@ -79,12 +79,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampModel, DeleteModel):
     nickname = models.CharField(
         unique=True,
         max_length=64,
-<<<<<<< HEAD
         default=set_nickname,
-=======
-        default=set_nickname(),
-        validators=[NicknameValidator()],
->>>>>>> feat/course-13
         verbose_name="닉네임",
     )
     is_staff = models.BooleanField(default=False, verbose_name="관리자여부")
