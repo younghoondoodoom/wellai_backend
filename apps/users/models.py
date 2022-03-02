@@ -133,9 +133,7 @@ class UserDailyRecord(TimeStampModel, models.Model):
         on_delete=models.CASCADE,
         db_column="user_id",
     )
-    exercise_date = models.DateField(
-        auto_now_add=True, editable=True, verbose_name="운동 날짜"
-    )
+    exercise_date = models.DateField(verbose_name="운동 날짜")
     exercise_week = models.PositiveSmallIntegerField(
         default=int(today.isocalendar()[1]), editable=False, verbose_name="주차"
     )
