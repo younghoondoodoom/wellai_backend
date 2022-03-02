@@ -47,6 +47,19 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         max_length=128, validators=[PasswordValidator()], write_only=True
     )
 
+    class Meta:
+        model = User
+        read_only_fields = ("nickname",)
+        fields = ("email", "nickname", "password", "options")
+
+    def create(self, validated_data):
+        options_validated_data = validated_data.pop("option")
+        user = User.objects.create_user(**validated_data)
+        options_validated_data["user_id"] = user
+        options_serializer = self.fields["options"]
+        options_serializer.create(options_validated_data)
+        return user
+
 
 class UserDailyRecordSerializer(serializers.ModelSerializer):
     class Meta:
