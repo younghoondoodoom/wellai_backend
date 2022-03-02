@@ -20,4 +20,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("email", "password", "options")
+        read_only_fields = ("nickname",)
+        fields = ("email", "nickname", "password", "options")
+
+    def create(self, validated_data):
+        options_validated_data = validated_data.pop("option")
+        user = User.objects.create_user(**validated_data)
+        options_validated_data["user_id"] = user
+        options_serializer = self.fields["options"]
+        useroption = options_serializer.create(options_validated_data)
+        return user
