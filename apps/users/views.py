@@ -5,11 +5,11 @@ from rest_framework import generics, mixins, permissions, status
 from apps.cores.permissions import IsOwner
 
 from .models import User, UserDailyRecord
-from .serializers import UserRecordSummarySerializer
+from .serializers import UserMonthlyRecordSerializer
 
 
-class UserRecordListView(generics.ListAPIView):
-    serializer_class = UserRecordSummarySerializer
+class UserMonthlyRecordView(generics.ListAPIView):
+    serializer_class = UserMonthlyRecordSerializer
     permission_classes = [IsOwner]
     current_month = timezone.now().strftime("%m")
     current_year = timezone.now().strftime("%Y")

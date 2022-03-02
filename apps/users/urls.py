@@ -6,12 +6,12 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 
-from .views import UserRecordListView
+from .views import UserMonthlyRecordView
 
 urlpatterns = [
     path("login", TokenObtainPairView.as_view(), name="login"),
     path("logout", TokenBlacklistView.as_view(), name="logout"),
     path("token/refresh", TokenRefreshView.as_view(), name="token-refresh"),
     path("token/verify", TokenVerifyView.as_view(), name="token-verify"),
-    path("records", UserRecordListView.as_view(), name="user-records"),
+    path("records/month", UserMonthlyRecordView.as_view(), name="monthly-records"),
 ]

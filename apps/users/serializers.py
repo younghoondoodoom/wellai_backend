@@ -1,4 +1,5 @@
 from django.core.validators import EmailValidator
+from django.db.models import Q, Sum
 from rest_framework import serializers
 
 from .models import User, UserDailyRecord, UserOption
@@ -21,18 +22,17 @@ class UserDailyRecordSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class UserRecordSummarySerializer(serializers.ModelSerializer):
+class UserMonthlyRecordSerializer(serializers.ModelSerializer):
     month_exercise_time = serializers.SerializerMethodField()
     month_calories = serializers.SerializerMethodField()
-    records = UserDailyRecordSerializer(source="daily_record", many=True)
 
     def get_month_exercise_time(self, obj):
         time = list(obj.daily_record.aggregate(Sum("exercise_duration")).values())[0]
-        return int(time)
+        return int(time) if time else 0
 
     def get_month_calories(self, obj):
         cals = list(obj.daily_record.aggregate(Sum("calories_total")).values())[0]
-        return cals
+        return cals if cals else 0
 
     class Meta:
         model = User
@@ -43,5 +43,4 @@ class UserRecordSummarySerializer(serializers.ModelSerializer):
             "nickname",
             "month_exercise_time",
             "month_calories",
-            "records",
         )
