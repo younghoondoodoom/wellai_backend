@@ -9,6 +9,7 @@ from rest_framework_simplejwt.views import (
 from .views import (
     UserMonthlyRecordView,
     UserOptionUpdateView,
+    UserRecordUpdateView,
     UserRegisterCheckView,
     UserRegisterView,
     UserWeeklyRecordView,
@@ -23,5 +24,6 @@ urlpatterns = [
     path("option", UserOptionUpdateView.as_view(), name="user-option-update"),
     path("records/month/", UserMonthlyRecordView.as_view(), name="monthly-records"),
     path("records/week", UserWeeklyRecordView.as_view(), name="weekly-records"),
+    path("records", UserRecordUpdateView.as_view(), name="records-update"),
     path("register", UserRegisterView.as_view(), name="register"),
 ]

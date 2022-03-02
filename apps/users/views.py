@@ -10,6 +10,7 @@ from apps.users.exceptions import EmailExistException, PasswordCheckException
 from .models import User, UserDailyRecord, UserOption
 from .serializers import (
     DateCheckSerializer,
+    UserDailyRecordSerializer,
     UserMonthlyRecordSerializer,
     UserOptionSerializer,
     UserRegisterCheckSerializer,
@@ -96,3 +97,8 @@ class UserWeeklyRecordView(generics.ListAPIView):
             )
         )
         return queryset
+
+
+class UserRecordUpdateView(generics.CreateAPIView):
+    serializer_class = UserDailyRecordSerializer
+    permission_classes = [IsOwner]
