@@ -85,15 +85,6 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampModel, DeleteModel):
     USERNAME_FIELD = "email"
     objects = CustomUserManager()
 
-    @classmethod
-    def create(cls, email, password, options):
-        user = cls(email=email, password=password)
-        user_option = UserOption(user_id=user, **options)
-        with transaction.atomic():
-            user.save()
-            user_option.save()
-        return user
-
     def __str__(self):
         return self.email
 

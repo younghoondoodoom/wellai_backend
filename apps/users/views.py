@@ -27,9 +27,3 @@ class UserRegisterCheckView(generics.CreateAPIView):
 
 class UserRegisterView(generics.CreateAPIView):
     serializer_class = UserRegisterSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = UserRegisterSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        User.create(**request.data)
-        return Response(status=status.HTTP_201_CREATED)
