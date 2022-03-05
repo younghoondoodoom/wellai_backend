@@ -32,6 +32,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -61,7 +62,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-SITE_ID = 1
 
 # CORS
 CORS_ALLOW_CREDENTIALS = True
@@ -124,7 +124,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, ".static")
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-# ---------SIMPLE JWT---------
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
         "rest_framework_simplejwt.authentication.JWTAuthentication",
@@ -136,6 +135,7 @@ REST_FRAMEWORK = {
     "EXCEPTION_HANDLER": "apps.cores.exceptions.custom_exception_handler",
 }
 
+# ---------SIMPLE JWT
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
@@ -150,3 +150,5 @@ SWAGGER_SETTINGS = {
         "Bearer": {"type": "apiKey", "name": "Authorization", "in": "header"}
     }
 }
+
+SITE_ID = 1
