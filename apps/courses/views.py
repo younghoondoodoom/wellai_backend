@@ -1,10 +1,10 @@
+from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions
 from rest_framework.exceptions import ValidationError
 
 from apps.cores.paginations import StandardPageNumberPagination
 from apps.cores.permissions import IsOwner
-from apps.users.models import UserOption
 
 from .models import BookMark, Course, CourseReview, Exercise
 from .serializers import (
@@ -70,6 +70,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     ordering_fields = ["rating", "created_at"]
     ordering = ["-rating"]
 
+    @transaction.atomic
     def perform_create(self, serializer):
         """
         코스 평균 평점, 평점 개수에 셍성되는 리뷰를 반영
@@ -105,6 +106,7 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     throttle_scope = "standard"
     queryset = CourseReview.objects.all()
 
+    @transaction.atomic
     def perform_destroy(self, review):
         """
         코스 평균 평점, 리뷰 개수에 삭제되는 리뷰를 반영
@@ -124,13 +126,13 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
 
         review.delete()
 
+    @transaction.atomic
     def perform_update(self, serializer):
         """
         코스 평균 평점에 수정되는 리뷰를 반영
         """
-        course = serializer.validated_data["course_id"]
-        user = self.request.user
-        review = user.user_review.get(course_id=course)
+        review = self.get_object()
+        course = review.course_id
         count_review = course.count_review
 
         if count_review == 1:
@@ -161,6 +163,7 @@ class BookMarkListCreateView(generics.ListCreateAPIView):
         queryset = user.user_bookmark.all()
         return queryset
 
+    @transaction.atomic
     def perform_create(self, serializer):
         course = serializer.validated_data["course_id"]
         user = self.request.user
