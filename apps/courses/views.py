@@ -72,9 +72,8 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     ordering = ["-rating"]
 
     def get_queryset(self):
-        pk = self.kwargs.get("pk")
         try:
-            course = Course.objects.get(pk=pk)
+            course = Course.objects.get(pk=self.kwargs.get("pk"))
         except Course.DoesNotExist:
             raise NotFound
         course_review = course.course_review
@@ -85,7 +84,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         """
         코스 평균 평점, 평점 개수에 셍성되는 리뷰를 반영
         """
-        course = serializer.validated_data["course_id"]  # 고려해보자..
+        course = Course.objects.get(pk=self.kwargs.get("pk"))
         user = self.request.user
         review_queryset = user.user_review.filter(course_id=course)
 
@@ -102,7 +101,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         course.count_review += 1
         course.save()
 
-        serializer.save(user_id=user)
+        serializer.save(user_id=user, course_id=course)
 
 
 class ReviewCollecListView(generics.ListAPIView):
