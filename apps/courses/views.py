@@ -104,7 +104,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         serializer.save(user_id=user, course_id=course)
 
 
-class MyReviewCollecListView(generics.ListAPIView):
+class MyReviewCollectListView(generics.ListAPIView):
     """
     유저의 댓글 모음
     """
@@ -118,6 +118,24 @@ class MyReviewCollecListView(generics.ListAPIView):
         user = self.request.user
         review_queryset = user.review
         return review_queryset
+
+
+class MyReviewListView(generics.ListAPIView):
+    """
+    유저가 해당 코스에 작성한 댓글
+    """
+
+    name = "Review Retrieve"
+    serializer_class = CourseReviewShowUserSerializer
+    permission_classes = [IsOwnerProp]
+    throttle_scope = "standard"
+    queryset = CourseReview.objects.all()
+
+    def filter_queryset(self, queryset):
+        queryset = queryset.filter(
+            course_id=self.kwargs.get("pk"), user_id=self.request.user
+        )
+        return queryset
 
 
 class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
