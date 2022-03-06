@@ -1,15 +1,17 @@
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import NotFound
 
 from apps.cores.paginations import StandardPageNumberPagination
-from apps.cores.permissions import IsOwner
+from apps.cores.permissions import IsOwnerProp
 
+from .exceptions import BookMarkExistException, ReviewExistException
 from .models import BookMark, Course, CourseReview, Exercise
 from .serializers import (
     BookMarkSerializer,
-    CourseReviewSerializer,
+    CourseReviewListCreatewSerializer,
+    CourseReviewUpdateDeleteSerializer,
     CourseSerializer,
     ExerciseSerializer,
 )
@@ -40,7 +42,7 @@ class CourseListView(generics.ListAPIView):
     throttle_scope = "standard"
     queryset = Course.objects.all()
     filter_backends = [filters.SearchFilter]
-    search_fields = ["course_name", "hash_tag__tag"]
+    search_fields = ["course_name", "hash_tag__tag_name"]
 
 
 class CourseDetailView(generics.RetrieveAPIView):
@@ -61,14 +63,22 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     """
 
     name = "Course Review List & Create"
-    serializer_class = CourseReviewSerializer
+    serializer_class = CourseReviewListCreatewSerializer
     pagination_class = StandardPageNumberPagination
     throttle_scope = "standard"
     permission_classes = [permissions.IsAuthenticated]
-    queryset = CourseReview.objects.all()
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["rating", "created_at"]
     ordering = ["-rating"]
+
+    def get_queryset(self):
+        pk = self.kwargs.get("pk")
+        try:
+            course = Course.objects.get(pk=pk)
+        except Course.DoesNotExist:
+            raise NotFound
+        course_review = course.course_review
+        return course_review
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -77,10 +87,12 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         """
         course = serializer.validated_data["course_id"]
         user = self.request.user
+        print(user)
         review_queryset = user.user_review.filter(course_id=course)
+        print(review_queryset)
 
         if review_queryset.exists():
-            raise ValidationError("이미 이 코스에 대한 리뷰가 있습니다!")
+            raise ReviewExistException
 
         if course.count_review == 0:
             course.avg_rating = serializer.validated_data["rating"]
@@ -92,7 +104,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         course.count_review += 1
         course.save()
 
-        serializer.save()
+        serializer.save(user_id=user)
 
 
 class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
@@ -101,8 +113,8 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     """
 
     name = "Course Review Read & Update & Delete"
-    serializer_class = CourseReviewSerializer
-    permission_classes = [IsOwner]
+    serializer_class = CourseReviewUpdateDeleteSerializer
+    permission_classes = [IsOwnerProp]
     throttle_scope = "standard"
     queryset = CourseReview.objects.all()
 
@@ -139,9 +151,12 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
             course.avg_rating = serializer.validated_data["rating"]
         else:
             course.avg_rating = round(
-                course.avg_rating * count_review
-                - review.rating
-                + serializer.validated_data["rating"] / count_review
+                (
+                    course.avg_rating * count_review
+                    - review.rating
+                    + serializer.validated_data["rating"]
+                )
+                / count_review
             )
         course.save()
 
@@ -170,7 +185,7 @@ class BookMarkListCreateView(generics.ListCreateAPIView):
         bookmark_queryset = user.user_bookmark.filter(course_id=course)
 
         if bookmark_queryset.exists():
-            raise ValidationError("이미 이 코스를 북마크 하셨습니다!")
+            raise BookMarkExistException
 
         serializer.save()
 
@@ -182,7 +197,7 @@ class BookMarkDeleteView(generics.DestroyAPIView):
 
     name = "Course Bookmark Delete"
     serializer = BookMarkSerializer
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwnerProp]
     throttle_scope = "standard"
     queryset = BookMark.objects.all()
 
@@ -223,13 +238,13 @@ class CourseRecommendView(generics.ListAPIView):
             else:
                 queryset = queryset | qs
         if user_option.is_leg:
-            qs = course.order_by("-leg_count")[:5]
+            qs = course.order_by("-arm_count")[:5]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
         if user_option.is_back:
-            qs = course.order_by("-back_count")[:5]
+            qs = course.order_by("-recline_count")[:5]
             if queryset is None:
                 queryset = qs
             else:

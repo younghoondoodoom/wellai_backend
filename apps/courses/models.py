@@ -31,6 +31,7 @@ class Course(models.Model):
     img_url = models.CharField(max_length=100, unique=True)
     avg_rating = models.FloatField(default=0, verbose_name="평균 평점")
     count_review = models.IntegerField(default=0, verbose_name="리뷰 개수")
+    description = models.CharField(max_length=200, verbose_name="코스 설명", blank=True)
     hash_tag = models.ManyToManyField(
         Tag, related_name="tag_course", verbose_name="해쉬태그", blank=True
     )
@@ -44,8 +45,8 @@ class Course(models.Model):
     sit_count = models.PositiveSmallIntegerField(default=0, verbose_name="앉아서 개수")
     balance_count = models.PositiveSmallIntegerField(default=0, verbose_name="밸런스 개수")
     core_count = models.PositiveSmallIntegerField(default=0, verbose_name="코어 개수")
-    leg_count = models.PositiveSmallIntegerField(default=0, verbose_name="다리 개수")
-    back_count = models.PositiveSmallIntegerField(default=0, verbose_name="등 개수")
+    arm_count = models.PositiveSmallIntegerField(default=0, verbose_name="다리 개수")
+    recline_count = models.PositiveSmallIntegerField(default=0, verbose_name="등 개수")
 
     class Meta:
         ordering = ["avg_rating", "course_name"]
