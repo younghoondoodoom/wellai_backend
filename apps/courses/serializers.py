@@ -22,7 +22,6 @@ class CourseSerializer(serializers.ModelSerializer):
         many=True, read_only=True, view_name="exercise-detail"
     )
     hash_tag = TagSerailizer(many=True, read_only=True)
-    exercise_pk = serializers.SerializerMethodField()
 
     class Meta:
         model = Course
