@@ -31,11 +31,12 @@ class Course(models.Model):
     img_url = models.CharField(max_length=100, unique=True)
     avg_rating = models.FloatField(default=0, verbose_name="평균 평점")
     count_review = models.IntegerField(default=0, verbose_name="리뷰 개수")
+    description = models.CharField(max_length=200, verbose_name="코스 설명", blank=True)
     hash_tag = models.ManyToManyField(
-        Tag, related_name="tag_course", verbose_name="해쉬태그", blank=True
+        Tag, related_name="course", verbose_name="해쉬태그", blank=True
     )
     review_user = models.ManyToManyField(
-        User, related_name="user_course", verbose_name="유저 코스", through="CourseReview"
+        User, related_name="review_course", verbose_name="유저 코스", through="CourseReview"
     )
     bookmark_user = models.ManyToManyField(
         User, related_name="bookmark_course", verbose_name="북마크 코스", through="BookMark"
@@ -44,8 +45,8 @@ class Course(models.Model):
     sit_count = models.PositiveSmallIntegerField(default=0, verbose_name="앉아서 개수")
     balance_count = models.PositiveSmallIntegerField(default=0, verbose_name="밸런스 개수")
     core_count = models.PositiveSmallIntegerField(default=0, verbose_name="코어 개수")
-    leg_count = models.PositiveSmallIntegerField(default=0, verbose_name="다리 개수")
-    back_count = models.PositiveSmallIntegerField(default=0, verbose_name="등 개수")
+    arm_count = models.PositiveSmallIntegerField(default=0, verbose_name="다리 개수")
+    recline_count = models.PositiveSmallIntegerField(default=0, verbose_name="등 개수")
 
     class Meta:
         ordering = ["avg_rating", "course_name"]
@@ -58,13 +59,13 @@ class CourseReview(TimeStampModel, DeleteModel):
     user_id = models.ForeignKey(
         User,
         on_delete=models.DO_NOTHING,
-        related_name="user_review",
+        related_name="review",
         verbose_name="유저",
     )
     course_id = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name="course_review",
+        related_name="review",
         verbose_name="코스",
     )
     content = models.TextField(max_length=300, verbose_name="내용")
@@ -80,13 +81,13 @@ class BookMark(TimeStampModel):
     user_id = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        related_name="user_bookmark",
+        related_name="bookmark",
         verbose_name="유저",
     )
     course_id = models.ForeignKey(
         Course,
         on_delete=models.CASCADE,
-        related_name="course_bookmark",
+        related_name="bookmark",
         verbose_name="코스",
     )
 
