@@ -148,9 +148,12 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
             course.avg_rating = serializer.validated_data["rating"]
         else:
             course.avg_rating = round(
-                course.avg_rating * count_review
-                - review.rating
-                + serializer.validated_data["rating"] / count_review
+                (
+                    course.avg_rating * count_review
+                    - review.rating
+                    + serializer.validated_data["rating"]
+                )
+                / count_review
             )
         course.save()
 
