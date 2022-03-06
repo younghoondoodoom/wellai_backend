@@ -10,7 +10,8 @@ from .exceptions import BookMarkExistException, ReviewExistException
 from .models import BookMark, Course, CourseReview, Exercise
 from .serializers import (
     BookMarkSerializer,
-    CourseReviewSerializer,
+    CourseReviewShowUserSerializer,
+    CourseReviewStandardSerializer,
     CourseSerializer,
     ExerciseSerializer,
 )
@@ -41,7 +42,7 @@ class CourseListView(generics.ListAPIView):
     throttle_scope = "standard"
     queryset = Course.objects.all()
     filter_backends = [filters.SearchFilter]
-    search_fields = ["course_name", "hash_tag__tag"]
+    search_fields = ["course_name", "hash_tag__tag_name"]
 
 
 class CourseDetailView(generics.RetrieveAPIView):
@@ -62,7 +63,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     """
 
     name = "Course Review List & Create"
-    serializer_class = CourseReviewSerializer
+    serializer_class = CourseReviewShowUserSerializer
     pagination_class = StandardPageNumberPagination
     throttle_scope = "standard"
     permission_classes = [permissions.IsAuthenticated]
@@ -109,7 +110,7 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     """
 
     name = "Course Review Read & Update & Delete"
-    serializer_class = CourseReviewSerializer
+    serializer_class = CourseReviewStandardSerializer
     permission_classes = [IsOwnerProp]
     throttle_scope = "standard"
     queryset = CourseReview.objects.all()
@@ -231,13 +232,13 @@ class CourseRecommendView(generics.ListAPIView):
             else:
                 queryset = queryset | qs
         if user_option.is_leg:
-            qs = course.order_by("-leg_count")[:5]
+            qs = course.order_by("-arm_count")[:5]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
         if user_option.is_back:
-            qs = course.order_by("-back_count")[:5]
+            qs = course.order_by("-recline_count")[:5]
             if queryset is None:
                 queryset = qs
             else:

@@ -1,5 +1,7 @@
 from rest_framework import serializers
 
+from apps.users.models import User
+
 from .models import BookMark, Course, CourseReview, Exercise, Tag
 
 
@@ -23,15 +25,32 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        exclude = ["review_user", "bookmark_user"]
+        exclude = [
+            "stand_count",
+            "sit_count",
+            "balance_count",
+            "core_count",
+            "arm_count",
+            "recline_count",
+            "review_user",
+            "bookmark_user",
+        ]
 
 
-class CourseReviewSerializer(serializers.ModelSerializer):
-    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+class CourseReviewShowUserSerializer(serializers.ModelSerializer):
+    user_id = serializers.ReadOnlyField(source="user_id.nickname")
 
     class Meta:
         model = CourseReview
         exclude = ["is_deleted", "deleted_at"]
+
+
+class CourseReviewStandardSerializer(serializers.ModelSerializer):
+    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = CourseReview
+        exclude = ["is_deleted", "deleted_at", "course_id"]
 
 
 class BookMarkSerializer(serializers.ModelSerializer):
