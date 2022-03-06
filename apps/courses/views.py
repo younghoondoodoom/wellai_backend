@@ -104,6 +104,22 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         serializer.save(user_id=user, course_id=course)
 
 
+class MyReviewCollecListView(generics.ListAPIView):
+    """
+    유저의 댓글 모음
+    """
+
+    name = "Review Collect List"
+    serializer_class = CourseReviewShowUserSerializer
+    permission_classes = [IsOwnerProp]
+    throttle_scope = "standard"
+
+    def get_queryset(self):
+        user = self.request.user
+        review_queryset = user.review
+        return review_queryset
+
+
 class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     """
     코스 리뷰 삭제 및 업데이트
