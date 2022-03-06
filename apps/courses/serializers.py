@@ -25,7 +25,16 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = "__all__"
+        exclude = [
+            "stand_count",
+            "sit_count",
+            "balance_count",
+            "core_count",
+            "arm_count",
+            "recline_count",
+            "review_user",
+            "bookmark_user",
+        ]
 
 
 class CourseReviewShowUserSerializer(serializers.ModelSerializer):

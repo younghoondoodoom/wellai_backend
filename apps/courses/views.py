@@ -76,7 +76,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
             course = Course.objects.get(pk=self.kwargs.get("pk"))
         except Course.DoesNotExist:
             raise NotFound
-        course_review = course.course_review
+        course_review = course.review
         return course_review
 
     @transaction.atomic
@@ -86,7 +86,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         """
         course = serializer.validated_data["course_id"]
         user = self.request.user
-        review_queryset = user.user_review.filter(course_id=course)
+        review_queryset = user.review.filter(course_id=course)
 
         if review_queryset.exists():
             raise ReviewExistException
@@ -104,7 +104,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         serializer.save(user_id=user, course_id=course)
 
 
-class ReviewCollecListView(generics.ListAPIView):
+class MyReviewCollecListView(generics.ListAPIView):
     """
     유저의 댓글 모음
     """
@@ -116,7 +116,7 @@ class ReviewCollecListView(generics.ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        review_queryset = user.user_review
+        review_queryset = user.review
         return review_queryset
 
 
@@ -188,14 +188,14 @@ class BookMarkListCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        queryset = user.user_bookmark.all()
+        queryset = user.bookmark.all()
         return queryset
 
     @transaction.atomic
     def perform_create(self, serializer):
         course = serializer.validated_data["course_id"]
         user = self.request.user
-        bookmark_queryset = user.user_bookmark.filter(course_id=course)
+        bookmark_queryset = user.bookmark.filter(course_id=course)
 
         if bookmark_queryset.exists():
             raise BookMarkExistException
