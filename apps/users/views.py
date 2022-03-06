@@ -1,8 +1,15 @@
+import json
+
+import requests
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from rest_framework import generics, status
 from rest_framework.response import Response
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
+from rest_framework_simplejwt.serializers import TokenVerifySerializer
+from rest_framework_simplejwt.views import TokenVerifyView
 
 from apps.cores.permissions import IsOwner
 from apps.users.exceptions import EmailExistException, PasswordCheckException
@@ -17,6 +24,21 @@ from .serializers import (
     UserRegisterSerializer,
     UserWeeklyRecordSerializer,
 )
+from .utils import get_decoded_token
+
+
+class CustomTokenVerifyView(TokenVerifyView):
+    serializer_class = TokenVerifySerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError:
+            token = get_decoded_token(request.data["token"])
+            raise InvalidToken(_(f"{token['token_type']} token is invalid or expired"))
+
+        return Response(serializer.validated_data, status=status.HTTP_200_OK)
 
 
 class UserRegisterCheckView(generics.CreateAPIView):
