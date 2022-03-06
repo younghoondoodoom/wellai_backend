@@ -27,7 +27,7 @@ urlpatterns = [
     ),
     path("bookmark", BookMarkListCreateView.as_view(), name="course-bookmark"),
     path(
-        "bookmark/<int:pk>", BookMarkDeleteView.as_view(), name="course-bookmark-delete"
+        "<int:pk>/bookmark", BookMarkDeleteView.as_view(), name="course-bookmark-delete"
     ),
     path("recommendation", CourseRecommendView.as_view(), name="course-recommend"),
 ]

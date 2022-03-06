@@ -1,7 +1,8 @@
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
-from rest_framework import filters, generics, permissions
+from rest_framework import filters, generics, permissions, status
 from rest_framework.exceptions import NotFound
+from rest_framework.response import Response
 
 from apps.cores.paginations import StandardPageNumberPagination
 from apps.cores.permissions import IsOwnerProp
@@ -231,6 +232,16 @@ class BookMarkDeleteView(generics.DestroyAPIView):
     permission_classes = [IsOwnerProp]
     throttle_scope = "standard"
     queryset = BookMark.objects.all()
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            bookmark = self.queryset.get(
+                course_id=self.kwargs.get("pk"), user_id=request.user
+            )
+        except BookMark.DoesNotExist:
+            raise NotFound
+        self.perform_destroy(bookmark)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class CourseRecommendView(generics.ListAPIView):
