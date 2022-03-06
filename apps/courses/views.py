@@ -1,10 +1,10 @@
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound
 
 from apps.cores.paginations import StandardPageNumberPagination
-from apps.cores.permissions import IsOwner
+from apps.cores.permissions import IsOwnerProp
 
 from .exceptions import BookMarkExistException, ReviewExistException
 from .models import BookMark, Course, CourseReview, Exercise
@@ -110,7 +110,7 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
 
     name = "Course Review Read & Update & Delete"
     serializer_class = CourseReviewSerializer
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwnerProp]
     throttle_scope = "standard"
     queryset = CourseReview.objects.all()
 
@@ -190,7 +190,7 @@ class BookMarkDeleteView(generics.DestroyAPIView):
 
     name = "Course Bookmark Delete"
     serializer = BookMarkSerializer
-    permission_classes = [IsOwner]
+    permission_classes = [IsOwnerProp]
     throttle_scope = "standard"
     queryset = BookMark.objects.all()
 
