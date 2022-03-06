@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.fields import CurrentUserDefault
 
 from apps.users.models import User
 
@@ -22,6 +23,17 @@ class CourseSerializer(serializers.ModelSerializer):
         many=True, read_only=True, view_name="exercise-detail"
     )
     hash_tag = TagSerailizer(many=True, read_only=True)
+    is_bookmarked = serializers.SerializerMethodField()
+
+    def get_is_bookmarked(self, course):
+        user = self.context["request"].user
+        if user.is_anonymous:
+            return False
+        try:
+            course.bookmark.get(user_id=user)
+        except BookMark.DoesNotExist:
+            return False
+        return True
 
     class Meta:
         model = Course
