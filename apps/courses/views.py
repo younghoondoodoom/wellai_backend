@@ -84,7 +84,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         """
         코스 평균 평점, 평점 개수에 셍성되는 리뷰를 반영
         """
-        course = Course.objects.get(pk=self.kwargs.get("pk"))
+        course = serializer.validated_data["course_id"]
         user = self.request.user
         review_queryset = user.user_review.filter(course_id=course)
 

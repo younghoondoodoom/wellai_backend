@@ -30,7 +30,6 @@ class CourseSerializer(serializers.ModelSerializer):
 
 class CourseReviewShowUserSerializer(serializers.ModelSerializer):
     user_id = serializers.ReadOnlyField(source="user_id.nickname")
-    course_id = serializers.ReadOnlyField(source="course_id.id")
 
     class Meta:
         model = CourseReview
