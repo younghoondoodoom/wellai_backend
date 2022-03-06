@@ -1,11 +1,12 @@
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import NotFound, ValidationError
 
 from apps.cores.paginations import StandardPageNumberPagination
 from apps.cores.permissions import IsOwner
 
+from .exceptions import BookMarkExistException, ReviewExistException
 from .models import BookMark, Course, CourseReview, Exercise
 from .serializers import (
     BookMarkSerializer,
@@ -65,10 +66,17 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     pagination_class = StandardPageNumberPagination
     throttle_scope = "standard"
     permission_classes = [permissions.IsAuthenticated]
-    queryset = CourseReview.objects.all()
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["rating", "created_at"]
     ordering = ["-rating"]
+
+    def get_queryset(self):
+        try:
+            course = Course.objects.get(pk=self.kwargs.get("pk"))
+        except Course.DoesNotExist:
+            raise NotFound
+        course_review = course.review
+        return course_review
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -77,10 +85,10 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         """
         course = serializer.validated_data["course_id"]
         user = self.request.user
-        review_queryset = user.user_review.filter(course_id=course)
+        review_queryset = user.review.filter(course_id=course)
 
         if review_queryset.exists():
-            raise ValidationError("이미 이 코스에 대한 리뷰가 있습니다!")
+            raise ReviewExistException
 
         if course.count_review == 0:
             course.avg_rating = serializer.validated_data["rating"]
@@ -92,7 +100,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         course.count_review += 1
         course.save()
 
-        serializer.save()
+        serializer.save(user_id=user, course_id=course)
 
 
 class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
