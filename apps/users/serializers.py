@@ -63,6 +63,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 class UserDailyRecordSerializer(serializers.ModelSerializer):
     user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    exercise_day = serializers.SerializerMethodField()
+
+    def get_exercise_day(self, obj):
+        return obj.exercise_date.weekday()
 
     class Meta:
         model = UserDailyRecord
