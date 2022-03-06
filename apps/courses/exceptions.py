@@ -12,3 +12,9 @@ class BookMarkExistException(APIException):
     status_code = 400
     default_detail = {"bookmark": ["이미 이 코스를 북마크 하셨습니다!"]}
     default_code = _("북마크 중복")
+
+
+class BookmarkDeleteException(APIException):
+    status_code = 400
+    default_detail = {"bookmark": ["이 코스를 북마크하지 않았습니다!"]}
+    default_code = _("북마크 되지 않음")

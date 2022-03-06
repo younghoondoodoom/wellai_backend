@@ -7,7 +7,11 @@ from rest_framework.response import Response
 from apps.cores.paginations import StandardPageNumberPagination
 from apps.cores.permissions import IsOwnerProp
 
-from .exceptions import BookMarkExistException, ReviewExistException
+from .exceptions import (
+    BookmarkDeleteException,
+    BookMarkExistException,
+    ReviewExistException,
+)
 from .models import BookMark, Course, CourseReview, Exercise
 from .serializers import (
     BookMarkSerializer,
@@ -239,7 +243,7 @@ class BookMarkDeleteView(generics.DestroyAPIView):
                 course_id=self.kwargs.get("pk"), user_id=request.user
             )
         except BookMark.DoesNotExist:
-            raise NotFound
+            raise BookmarkDeleteException
         self.perform_destroy(bookmark)
         return Response(status=status.HTTP_204_NO_CONTENT)
 
