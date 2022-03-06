@@ -7,6 +7,7 @@ from .views import (
     CourseListView,
     CourseRecommendView,
     ExerciseDetailView,
+    ReviewCollecListView,
     ReviewDeleteUpdateView,
     ReviewListCreateView,
 )
@@ -16,6 +17,7 @@ urlpatterns = [
     path("list", CourseListView.as_view(), name="course-list"),
     path("<int:pk>", CourseDetailView.as_view(), name="course-detail"),
     path("<int:pk>/review", ReviewListCreateView.as_view(), name="review-list-create"),
+    path("review/collection", ReviewCollecListView.as_view(), name="review-collection"),
     path(
         "review/<int:pk>", ReviewDeleteUpdateView.as_view(), name="review-update-delete"
     ),

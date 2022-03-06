@@ -28,7 +28,7 @@ class CourseSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class CourseReviewListCreatewSerializer(serializers.ModelSerializer):
+class CourseReviewShowUserSerializer(serializers.ModelSerializer):
     user_id = serializers.ReadOnlyField(source="user_id.nickname")
 
     class Meta:
@@ -36,7 +36,7 @@ class CourseReviewListCreatewSerializer(serializers.ModelSerializer):
         exclude = ["is_deleted", "deleted_at"]
 
 
-class CourseReviewUpdateDeleteSerializer(serializers.ModelSerializer):
+class CourseReviewStandardSerializer(serializers.ModelSerializer):
     user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:

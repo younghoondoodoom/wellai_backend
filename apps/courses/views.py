@@ -10,8 +10,8 @@ from .exceptions import BookMarkExistException, ReviewExistException
 from .models import BookMark, Course, CourseReview, Exercise
 from .serializers import (
     BookMarkSerializer,
-    CourseReviewListCreatewSerializer,
-    CourseReviewUpdateDeleteSerializer,
+    CourseReviewShowUserSerializer,
+    CourseReviewStandardSerializer,
     CourseSerializer,
     ExerciseSerializer,
 )
@@ -63,7 +63,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     """
 
     name = "Course Review List & Create"
-    serializer_class = CourseReviewListCreatewSerializer
+    serializer_class = CourseReviewShowUserSerializer
     pagination_class = StandardPageNumberPagination
     throttle_scope = "standard"
     permission_classes = [permissions.IsAuthenticated]
@@ -85,11 +85,9 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         """
         코스 평균 평점, 평점 개수에 셍성되는 리뷰를 반영
         """
-        course = serializer.validated_data["course_id"]
+        course = serializer.validated_data["course_id"]  # 고려해보자..
         user = self.request.user
-        print(user)
         review_queryset = user.user_review.filter(course_id=course)
-        print(review_queryset)
 
         if review_queryset.exists():
             raise ReviewExistException
@@ -107,13 +105,29 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         serializer.save(user_id=user)
 
 
+class ReviewCollecListView(generics.ListAPIView):
+    """
+    유저의 댓글 모음
+    """
+
+    name = "Review Collect List"
+    serializer_class = CourseReviewShowUserSerializer
+    permission_classes = [IsOwnerProp]
+    throttle_scope = "standard"
+
+    def get_queryset(self):
+        user = self.request.user
+        review_queryset = user.user_review
+        return review_queryset
+
+
 class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
     """
     코스 리뷰 삭제 및 업데이트
     """
 
     name = "Course Review Read & Update & Delete"
-    serializer_class = CourseReviewUpdateDeleteSerializer
+    serializer_class = CourseReviewStandardSerializer
     permission_classes = [IsOwnerProp]
     throttle_scope = "standard"
     queryset = CourseReview.objects.all()
