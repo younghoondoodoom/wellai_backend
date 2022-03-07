@@ -14,12 +14,12 @@ from apps.users.exceptions import EmailExistException, PasswordCheckException
 from .models import User, UserDailyRecord, UserOption
 from .serializers import (
     DateCheckSerializer,
+    UserAnnualRecordSerializer,
     UserDailyRecordSerializer,
     UserMonthlyRecordSerializer,
     UserOptionSerializer,
     UserRegisterCheckSerializer,
     UserRegisterSerializer,
-    UserWeeklyRecordSerializer,
 )
 from .utils import get_decoded_token
 
@@ -82,6 +82,22 @@ class UserOptionUpdateView(generics.RetrieveUpdateAPIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+class UserAnnualRecordView(generics.ListAPIView):
+    serializer_class = UserAnnualRecordSerializer
+    permission_classes = [IsOwner]
+
+    def get_queryset(self):
+        queryset = User.objects.filter(id=self.request.user.id).prefetch_related(
+            Prefetch(
+                "daily_record",
+                queryset=UserDailyRecord.objects.filter(
+                    exercise_date__year=timezone.now().year,
+                ),
+            )
+        )
+        return queryset
+
+
 class UserMonthlyRecordView(generics.ListAPIView):
     serializer_class = UserMonthlyRecordSerializer
     permission_classes = [IsOwner]
@@ -93,25 +109,7 @@ class UserMonthlyRecordView(generics.ListAPIView):
             Prefetch(
                 "daily_record",
                 queryset=UserDailyRecord.objects.filter(
-                    exercise_date__year=self.request.query_params["year"],
                     exercise_date__month=self.request.query_params["month"],
-                ),
-            )
-        )
-        return queryset
-
-
-class UserWeeklyRecordView(generics.ListAPIView):
-    serializer_class = UserWeeklyRecordSerializer
-    permission_classes = [IsOwner]
-    week = timezone.now().isocalendar()[1]
-
-    def get_queryset(self):
-        queryset = User.objects.filter(id=self.request.user.id).prefetch_related(
-            Prefetch(
-                "daily_record",
-                queryset=UserDailyRecord.objects.filter(
-                    exercise_week=self.week,
                 ).order_by("exercise_date"),
             )
         )
