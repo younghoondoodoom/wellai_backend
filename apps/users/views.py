@@ -1,6 +1,3 @@
-import json
-
-import requests
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Prefetch
 from django.utils import timezone
