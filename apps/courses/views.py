@@ -255,8 +255,15 @@ class CourseRecommendView(generics.ListAPIView):
 
     name = "Course Recommendation"
     serializer_class = CourseSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     throttle_scope = "standard"
+
+    def list(self, request, *args, **kwargs):
+        if request.user.is_anonymous:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
 
     def get_queryset(self):
         user = self.request.user
