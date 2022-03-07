@@ -14,10 +14,15 @@ class Tag(models.Model):
 
 class Exercise(models.Model):
     exercise_name = models.CharField(max_length=50, unique=True, verbose_name="운동 이름")
-    youtube_key = models.CharField(max_length=200, unique=True, verbose_name="유트브 키값")
+    youtube_key = models.CharField(
+        max_length=200, unique=True, blank=True, verbose_name="유트브 키값"
+    )
+    youtube_start = models.PositiveSmallIntegerField(
+        blank=True, verbose_name="유트브 시작 초"
+    )
+    youtube_end = models.PositiveSmallIntegerField(blank=True, verbose_name="유튜브 끝 초")
     exercise_type = models.CharField(max_length=50, verbose_name="운동 타입")
-    exercise_level = models.CharField(max_length=50, verbose_name="운동 레벨")
-    description = models.CharField(max_length=200, verbose_name="운동 설명")
+    description = models.CharField(max_length=200, blank=True, verbose_name="운동 설명")
 
     def __str__(self):
         return self.exercise_name
@@ -45,8 +50,8 @@ class Course(models.Model):
     sit_count = models.PositiveSmallIntegerField(default=0, verbose_name="앉아서 개수")
     balance_count = models.PositiveSmallIntegerField(default=0, verbose_name="밸런스 개수")
     core_count = models.PositiveSmallIntegerField(default=0, verbose_name="코어 개수")
-    arm_count = models.PositiveSmallIntegerField(default=0, verbose_name="다리 개수")
-    recline_count = models.PositiveSmallIntegerField(default=0, verbose_name="등 개수")
+    arm_count = models.PositiveSmallIntegerField(default=0, verbose_name="팔 개수")
+    recline_count = models.PositiveSmallIntegerField(default=0, verbose_name="엎드려서 개수")
 
     class Meta:
         ordering = ["avg_rating", "course_name"]
