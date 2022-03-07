@@ -19,9 +19,7 @@ class ExerciseSerializer(serializers.ModelSerializer):
 
 
 class CourseSerializer(serializers.ModelSerializer):
-    exercises = serializers.HyperlinkedRelatedField(
-        many=True, read_only=True, view_name="exercise-detail"
-    )
+    exercises = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
     hash_tag = TagSerailizer(many=True, read_only=True)
     is_bookmarked = serializers.SerializerMethodField()
 
