@@ -131,7 +131,7 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_CLASSES": [
         "rest_framework.throttling.ScopedRateThrottle",
     ],
-    "DEFAULT_THROTTLE_RATES": {"standard": "20/min"},
+    "DEFAULT_THROTTLE_RATES": {"standard": "60/min"},
     "EXCEPTION_HANDLER": "apps.cores.exceptions.custom_exception_handler",
 }
 
