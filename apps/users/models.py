@@ -56,17 +56,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampModel, DeleteModel):
     - DeleteModel : is_deleted, deleted_at
     """
 
-    def set_nickname():
-        fake = Faker(["ko_KR"])
-        while True:
-            try:
-                nickname = fake.bs().split(" ")[0]
-                nickname += random.choice(
-                    [fake.first_name(), fake.job().split(" ")[-1]]
-                )
-                User.object.get(nickname=nickname)
-            except Exception:
-                return nickname
+    from .utils import get_nickname
 
     email = models.EmailField(
         unique=True, validators=[EmailValidator()], verbose_name="이메일"
@@ -79,7 +69,7 @@ class User(AbstractBaseUser, PermissionsMixin, TimeStampModel, DeleteModel):
     nickname = models.CharField(
         unique=True,
         max_length=64,
-        default=set_nickname,
+        default=get_nickname,
         verbose_name="닉네임",
     )
     is_staff = models.BooleanField(default=False, verbose_name="관리자여부")

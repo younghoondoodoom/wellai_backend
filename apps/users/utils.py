@@ -1,5 +1,9 @@
+import random
+
 import jwt
 from config.settings.base import SIMPLE_JWT
+from django.core.exceptions import ObjectDoesNotExist
+from faker import Faker
 
 
 def get_calories(weight, duration):
@@ -20,3 +24,16 @@ def get_decoded_token(token):
         options=options,
     )
     return decoded_token
+
+
+def get_nickname():
+    from apps.users.models import User
+
+    fake = Faker(["ko_KR"])
+    while True:
+        nickname = fake.bs().split(" ")[0]
+        nickname += random.choice([fake.first_name(), fake.job().split(" ")[-1]])
+        try:
+            User.objects.get(nickname=nickname)
+        except ObjectDoesNotExist:
+            return nickname
