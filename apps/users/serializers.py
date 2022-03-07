@@ -1,6 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import EmailValidator
-from django.db.models import Q, Sum
+from django.db.models import F, Q, Sum
 from rest_framework import serializers
 
 from .models import User, UserDailyRecord, UserOption
@@ -97,22 +97,10 @@ class UserDailyRecordSerializer(serializers.ModelSerializer):
         return user_record
 
 
-class UserWeeklyRecordSerializer(serializers.ModelSerializer):
-    records = UserDailyRecordSerializer(source="daily_record", many=True)
-
-    class Meta:
-        model = User
-        fields = (
-            "id",
-            "email",
-            "nickname",
-            "records",
-        )
-
-
 class UserMonthlyRecordSerializer(serializers.ModelSerializer):
     month_exercise_time = serializers.SerializerMethodField()
     month_calories = serializers.SerializerMethodField()
+    records = UserDailyRecordSerializer(source="daily_record", many=True)
 
     def get_month_exercise_time(self, obj):
         time = list(obj.daily_record.aggregate(Sum("exercise_duration")).values())[0]
@@ -124,16 +112,59 @@ class UserMonthlyRecordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        read_only_fields = ("nickname",)
         fields = (
             "id",
             "email",
             "nickname",
             "month_exercise_time",
             "month_calories",
+            "records",
+        )
+
+
+class UserAnnualRecordSerializer(serializers.ModelSerializer):
+    year_exercise_duration = serializers.SerializerMethodField()
+    year_calories = serializers.SerializerMethodField()
+    months_exercise_duration = serializers.SerializerMethodField()
+    months_calories = serializers.SerializerMethodField()
+
+    def get_year_exercise_duration(self, obj):
+        time = list(obj.daily_record.aggregate(Sum("exercise_duration")).values())[0]
+        return int(time) if time else 0
+
+    def get_year_calories(self, obj):
+        cals = list(obj.daily_record.aggregate(Sum("calories_total")).values())[0]
+        return cals if cals else 0
+
+    def get_months_exercise_duration(self, obj):
+        time = list(
+            obj.daily_record.annotate(month=F("exercise_date__month"))
+            .values("month")
+            .annotate(total=Sum("exercise_duration"))
+        )
+        return time
+
+    def get_months_calories(self, obj):
+        cals = list(
+            obj.daily_record.annotate(month=F("exercise_date__month"))
+            .values("month")
+            .annotate(total=Sum("calories_total"))
+        )
+        return cals
+
+    class Meta:
+        model = User
+        read_only_fields = ("nickname",)
+        fields = (
+            "id",
+            "email",
+            "nickname",
+            "year_exercise_duration",
+            "year_calories",
+            "months_exercise_duration",
+            "months_calories",
         )
 
 
 class DateCheckSerializer(serializers.Serializer):
-    year = serializers.IntegerField()
     month = serializers.IntegerField(min_value=1, max_value=12)

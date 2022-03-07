@@ -16,7 +16,7 @@ schema_view = get_schema_view(
 
 
 extra_patterns = [
-    path("admin/", admin.site.urls),
+    path("admin", admin.site.urls),
     path("users/", include("apps.users.urls")),
     path("course/", include("apps.courses.urls")),
 ]

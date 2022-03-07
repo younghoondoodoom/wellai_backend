@@ -35,5 +35,5 @@ def get_nickname():
         nickname += random.choice([fake.first_name(), fake.job().split(" ")[-1]])
         try:
             User.objects.get(nickname=nickname)
-        except ObjectDoesNotExist:
+        except Exception:
             return nickname
