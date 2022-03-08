@@ -3,6 +3,8 @@ from rest_framework.fields import CurrentUserDefault
 
 from apps.users.models import User
 
+from apps.users.models import User
+
 from .models import BookMark, Course, CourseReview, Exercise, Tag
 
 

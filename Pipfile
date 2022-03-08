@@ -18,6 +18,7 @@ django-allauth = "*"
 psycopg2 = "*"
 requests = "*"
 faker = "*"
+gunicorn = "*"
 
 [dev-packages]
 
