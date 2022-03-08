@@ -3,8 +3,6 @@ from rest_framework.fields import CurrentUserDefault
 
 from apps.users.models import User
 
-from apps.users.models import User
-
 from .models import BookMark, Course, CourseReview, Exercise, Tag
 
 
@@ -63,6 +61,15 @@ class CourseReviewStandardSerializer(serializers.ModelSerializer):
     class Meta:
         model = CourseReview
         exclude = ["is_deleted", "deleted_at", "course_id"]
+
+
+class CourseReviewCollectSerializer(serializers.ModelSerializer):
+    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    course_id = serializers.SlugRelatedField(read_only=True, slug_field="course_name")
+
+    class Meta:
+        model = CourseReview
+        exclude = ["is_deleted", "deleted_at"]
 
 
 class BookMarkSerializer(serializers.ModelSerializer):
