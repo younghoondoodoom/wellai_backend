@@ -58,7 +58,7 @@ class CourseDetailView(generics.RetrieveAPIView):
 
     name = "Course Detail"
     serializer_class = CourseSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.AllowAny]
     throttle_scope = "standard"
     queryset = Course.objects.all()
 
@@ -72,7 +72,6 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     serializer_class = CourseReviewShowUserSerializer
     pagination_class = StandardPageNumberPagination
     throttle_scope = "standard"
-    permission_classes = [permissions.IsAuthenticated]
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["rating", "created_at"]
     ordering = ["-rating"]
@@ -84,6 +83,12 @@ class ReviewListCreateView(generics.ListCreateAPIView):
             raise NotFound
         course_review = course.review
         return course_review
+
+    def get_permissions(self):
+        if self.request.method == "POST":
+            self.permission_classes = [permissions.IsAuthenticated]
+        self.permission_classes = [permissions.AllowAny]
+        return super(self.__class__, self).get_permissions()
 
     @transaction.atomic
     def perform_create(self, serializer):
@@ -210,10 +215,9 @@ class BookMarkListCreateView(generics.ListCreateAPIView):
     throttle_scope = "standard"
 
     def get_serializer_class(self):
-        if self.request.method == "GET":
-            return BookMarkSerializer
         if self.request.method == "POST":
             return BookmarkCreateSerializer
+        return BookMarkSerializer
 
     def get_queryset(self):
         user = self.request.user
