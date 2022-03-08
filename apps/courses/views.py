@@ -16,6 +16,7 @@ from .models import BookMark, Course, CourseReview, Exercise
 from .serializers import (
     BookmarkCreateSerializer,
     BookMarkSerializer,
+    CourseReviewCollectSerializer,
     CourseReviewShowUserSerializer,
     CourseReviewStandardSerializer,
     CourseSerializer,
@@ -121,7 +122,7 @@ class MyReviewCollectListView(generics.ListAPIView):
     """
 
     name = "Review Collect List"
-    serializer_class = CourseReviewShowUserSerializer
+    serializer_class = CourseReviewCollectSerializer
     permission_classes = [IsOwnerProp]
     throttle_scope = "standard"
 
