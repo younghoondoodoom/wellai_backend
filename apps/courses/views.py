@@ -14,6 +14,7 @@ from .exceptions import (
 )
 from .models import BookMark, Course, CourseReview, Exercise
 from .serializers import (
+    BookmarkCreateSerializer,
     BookMarkSerializer,
     CourseReviewShowUserSerializer,
     CourseReviewStandardSerializer,
@@ -130,7 +131,7 @@ class MyReviewListView(generics.ListAPIView):
     유저가 해당 코스에 작성한 댓글
     """
 
-    name = "Review Retrieve"
+    name = "MyReview In The Course"
     serializer_class = CourseReviewShowUserSerializer
     permission_classes = [IsOwnerProp]
     throttle_scope = "standard"
@@ -204,14 +205,20 @@ class BookMarkListCreateView(generics.ListCreateAPIView):
     북마크 생성, 조회
     """
 
-    name = "Course BookMark Create"
-    serializer_class = BookMarkSerializer
+    name = "Course BookMark List Create"
     permission_classes = [permissions.IsAuthenticated]
     throttle_scope = "standard"
+
+    def get_serializer_class(self):
+        if self.request.method == "GET":
+            return BookMarkSerializer
+        if self.request.method == "POST":
+            return BookmarkCreateSerializer
 
     def get_queryset(self):
         user = self.request.user
         queryset = user.bookmark.all()
+        queryset = queryset.order_by("created_at")
         return queryset
 
     @transaction.atomic

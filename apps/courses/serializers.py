@@ -65,6 +65,15 @@ class CourseReviewStandardSerializer(serializers.ModelSerializer):
 
 class BookMarkSerializer(serializers.ModelSerializer):
     user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    course_id = CourseSerializer()
+
+    class Meta:
+        model = BookMark
+        fields = "__all__"
+
+
+class BookmarkCreateSerializer(serializers.ModelSerializer):
+    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
     class Meta:
         model = BookMark
