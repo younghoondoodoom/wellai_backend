@@ -4,7 +4,7 @@ services:
   api:
     build: .
     # must do: 배포 전에 꼭 migration 만들어놔야함.
-    command: sh -c "python3 manage.py migrate --noinput && python3 manage.py collectstatic --noinput && python3 load_data.py && gunicorn -c config/gunicorn.setting.py"
+    command: sh -c "python3 manage.py migrate --noinput && python3 manage.py flush --noinput && python3 load_data.py && python3 manage.py collectstatic --noinput && gunicorn -c config/gunicorn.setting.py"
     volumes:
       - .:/usr/src/app/
     ports:
