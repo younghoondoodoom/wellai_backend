@@ -47,6 +47,20 @@ class CourseSerializer(serializers.ModelSerializer):
         ]
 
 
+class CourseShowIdNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Course
+        fields = ["id", "course_name"]
+
+
+class CourseReviewSerializer(serializers.ModelSerializer):
+    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
+
+    class Meta:
+        model = CourseReview
+        exclude = ["is_deleted", "deleted_at", "course_id"]
+
+
 class CourseReviewShowUserSerializer(serializers.ModelSerializer):
     user_id = serializers.ReadOnlyField(source="user_id.nickname")
 
@@ -55,17 +69,9 @@ class CourseReviewShowUserSerializer(serializers.ModelSerializer):
         exclude = ["is_deleted", "deleted_at"]
 
 
-class CourseReviewStandardSerializer(serializers.ModelSerializer):
+class CourseReviewShowCourseSerializer(serializers.ModelSerializer):
     user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
-
-    class Meta:
-        model = CourseReview
-        exclude = ["is_deleted", "deleted_at", "course_id"]
-
-
-class CourseReviewCollectSerializer(serializers.ModelSerializer):
-    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
-    course_id = serializers.SlugRelatedField(read_only=True, slug_field="course_name")
+    course_id = CourseShowIdNameSerializer()
 
     class Meta:
         model = CourseReview
