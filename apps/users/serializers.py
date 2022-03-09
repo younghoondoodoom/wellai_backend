@@ -62,15 +62,35 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 
 class UserDailyRecordSerializer(serializers.ModelSerializer):
-    user_id = serializers.HiddenField(default=serializers.CurrentUserDefault())
     exercise_day = serializers.SerializerMethodField()
+    year = serializers.SerializerMethodField()
+    month = serializers.SerializerMethodField()
+    day = serializers.SerializerMethodField()
 
     def get_exercise_day(self, obj):
         return obj.exercise_date.weekday()
 
+    def get_year(self, obj):
+        return obj.exercise_date.year
+
+    def get_month(self, obj):
+        return obj.exercise_date.month
+
+    def get_day(self, obj):
+        return obj.exercise_date.day
+
     class Meta:
         model = UserDailyRecord
-        fields = "__all__"
+        fields = (
+            "exercise_week",
+            "exercise_day",
+            "exercise_date",
+            "year",
+            "month",
+            "day",
+            "exercise_duration",
+            "calories_total",
+        )
         read_only_fields = ("created_at", "calories_total")
 
     def create(self, validated_data):
