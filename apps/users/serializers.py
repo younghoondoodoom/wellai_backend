@@ -1,11 +1,31 @@
+from django.contrib.auth.models import update_last_login
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import EmailValidator
 from django.db.models import F, Q, Sum
 from rest_framework import serializers
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.settings import api_settings
 
 from .models import User, UserDailyRecord, UserOption
 from .utils import get_calories
 from .validators import PasswordValidator
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        data = super().validate(attrs)
+
+        refresh = self.get_token(self.user)
+
+        data["refresh"] = str(refresh)
+        data["access"] = str(refresh.access_token)
+        user = User.objects.get(email=attrs["email"])
+        nickname = user.nickname
+        data["nickname"] = nickname
+        if api_settings.UPDATE_LAST_LOGIN:
+            update_last_login(None, self.user)
+
+        return data
 
 
 class UserRegisterCheckSerializer(serializers.Serializer):
@@ -82,9 +102,9 @@ class UserDailyRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserDailyRecord
         fields = (
+            "exercise_date",
             "exercise_week",
             "exercise_day",
-            "exercise_date",
             "year",
             "month",
             "day",
