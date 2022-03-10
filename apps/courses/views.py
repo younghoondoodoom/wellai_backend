@@ -75,7 +75,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
     throttle_scope = "standard"
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["rating", "created_at"]
-    ordering = ["-rating"]
+    ordering = ["-created_at"]
 
     def get_queryset(self):
         try:
