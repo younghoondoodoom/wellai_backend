@@ -316,6 +316,6 @@ class CourseRecommendView(generics.ListAPIView):
                 queryset = queryset | qs
 
         if queryset is None:
-            return course.order_by("?")
+            return course.order_by("?")[0:1]
 
         return queryset.order_by("?")[0:1]
