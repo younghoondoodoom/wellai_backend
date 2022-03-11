@@ -1,68 +1,110 @@
-# (서비스 명)
-- 최종 서비스 명을 위 괄호 부분에 작성하세요.
-- 최종 서비스의 한 줄 소개를 작성하세요.
+# [🧘](https://emojipedia.org/yoga/) WellAI(웰라이)
+  *언제 어디서나 당신의 건강을 책임지는 AI 홈트 서비스, 웰라이*
 
 
-## 프로젝트 구성 안내
+## 1. 프로젝트 소개 ✅
+#### 1. 서비스 개요 및 배경 <br>
+- 코로나 19의 시간을 거치며, 우리는 더 건강에 대한 중요성이 증대되고 이외에도 다른 사람들의 눈이 신경쓰이거나 원하는 시간에 하기 위해서 집에서 하는 홈 트레이닝에 관심이 더 늘어나기 시작했습니다. 
+그리고 점차 ‘집'에서 할 수 있는 활동에 관심을 가지기 시작했죠.   
+그 중에서 웰라이는 집에서 건강을 지킬 수 있는, 인공지능(Aritificial Intelligence, AI)을 적용한 스마트한 홈트레이닝'서비스에 집중했습니다.   
+'내가 잘 따라하고 있나?', '이 자세가 맞는 자세인가?'를 고민하고, 운동을 어려워 하는 사람들을 대상으로 합니다.   
+실시간으로 AI가 당신의 움직임을 파악해서 도식화로 표시하고, 순운동시간을 기록해 줌으로써 실질적인 피드백을 받아 가실 수 있습니다.   
+'요가'는 특별한 운동 기구가 필요 없고, 정적이지만 근력 향상과 심신 수련에 많은 도움을 주는 운동이죠.   
+심적으로, 체력적으로 어려운 시간을 겪고 있는 현대인들에게 웰라이가 새로운 운동 라이프를 열어 드릴게요:)
 
-* `bullet point 에 적힌 내용을 수정해 주시면 됩니다.`
+<br>
 
-* `초기 기획은 언제든 수정될 수 있으니 웹서비스 결과를 내는데 초점을 두시기 바랍니다.`
+#### 2. 서비스 목표 
+**집에서도 요가학원 수업을 듣는 것처럼 실시간으로 자세 확인을 받으며 운동할 수 있다.**
+- 운동 자세 가이드 영상을 보면서 요가 자세를 따라할 수 있다.
+- 웹캠을 켜고 요가 자세를 취하면 AI가 운동 자세를 체킹해 준다.
+- 연간/월간 순수 운동 시간, 예상 칼로리 소모량(회원 정보에 등록된 신체 정보 기반)을 확인할 수 있다.
+- 본인이 답변한 선호 운동 타입을 바탕으로 코스를 추천 받을 수 있다.
+- 코스에 대한 후기를 남기고, 북마크 할 수 있다.
+- 원하는 코스를 검색할 수 있다.(검색 기준 - 제목/해시태그)
 
-## 1. 프로젝트 소개
+<br>
 
-**엔드유저에게 보이는 웹서비스에 대한 소개**
-  - 기술 스택 (React.js, Flask, MySQL 등)
-  - 웹서비스에 대한 자세한 개요
+## 2. 서비스 기능 소개 ✅
+- **메인 기능**
+  1. 실시간 요가 자세 체킹
+      - 요가 자세 가이드 영상 반복 재생
+      - 순운동시간, 자세 별 제한시간 존재
+      - 정확한 자세로 운동 시, 순 운동 시간 카운트 시작 및 스켈레톤 색상 초록색으로 변경
+      - 정확하지 않은 자세로 운동 시 스켈레톤 색상 회색으로 변경
+      - 정해진 순 운동 시간 채우면 자동으로 다음 자세로 넘어감
+      - 순 운동 시간을 채우지 못 한 경우, 각 자세별 제한 시간이 지나면 자동으로 다음 자세로 넘어감
+    2. 개인 운동 기록
+        - 연간, 월간 운동 기록 리포트 제공
+        - 순 운동시간, 소모 칼로리 기록
+        - 유저 운동 기록 대시보드(그래프)로 시각화
+    3. 회원관리
+        - 회원가입, 로그인, 로그아웃
+        - 개인 정보 수정 가능
 
-## 2. 프로젝트 기획 의도
+<br>
 
-**어떤 의도로 프로젝트를 기획했는지에 대한 설명**
-  - 프로젝트 아이디어 동기
-  - 해당 서비스를 통해 해결하고 싶었던 문제를 구체적으로 명시
+- **서브 기능**
+    1. 코스 리뷰 기능
+        - 코스에 대한 평점 및 리뷰 등록
+        - 본인 작성 리뷰 이력 조회(마이페이지) 및 삭제
+        - 최신 순, 오래된 순, 높은 평점 순, 낮은 평점 순으로 정렬(기본값 최신순)
+    2. 코스 검색
+        - 검색한 키워드를 기반으로 코스 검색
+    3. 코스 추천
+        - 유저 선호 운동 타입 정보를 기반으로 코스 추천
+    4. 코스 북마크(좋아요)
+        - 선호 코스 북마크 및
+        - 북마크 코스 리스트 조회(마이페이지)
 
-## 3. 서비스 주요 기능 설명
+<br>
 
-**웹서비스의 유용성, 편의성 및 시각화의 실용성에 대한 설명**
-  - 주요 기능 (주된 활용성) 및 서브 기능 소개
-  - 프로젝트만의 차별점, 기대 효과
+- **관련 문서**
+  - [와이어프레임](https://www.figma.com/file/0FC6VjrVkBBflLS2iMMo8U/확정본)
+  - [요구 명세서](https://unruly-space-e0e.notion.site/a1fd4e5741974262860677ff806af234)
 
-## 4. 프로젝트 구성도
-  - 프로젝트 구조도
-  - 와이어프레임 e.g) figma
-  - 스토리보드
+<br>
 
-## 5. 프로젝트 팀원 역할 분담
-| 이름 | 담당 업무 |
+## 3. 데이터셋 ✅
+- 요가 이미지 데이터 셋
+  - [Yoga-82: A New Dataset for Fine-grained Classification of Human Poses](https://arxiv.org/abs/2004.10362)
+  - [Yoga Pose Image classification dataset](https://www.kaggle.com/shrutisaxena/yoga-pose-image-classification-dataset)
+
+<br>
+
+## 4. 사용한 기술 ✅
+| 파트 | 기술 |
 | ------ | ------ |
-| 멤버1 | 팀장/프론트엔드 개발 |
-| 멤버2 | 백엔드 개발 |
-| 멤버3 | 인공지능 개발 |
+| Management | Gitlab, Notion, Figma |
+| 인공지능(AI) | <img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=flat-square&logo=TensorFlow&logoColor=white"/></a> <img src="https://img.shields.io/badge/OpenCV-5C3EE8?style=flat-square&logo=OpenCV&logoColor=white"/></a> <img src="https://img.shields.io/badge/pandas-150458?style=flat-square&logo=pandas&logoColor=white"/></a>|
+| 프론트엔드 | <img src="https://img.shields.io/badge/React-61DAFB?style=flat-square&logo=React&logoColor=white"/></a> <img src="https://shields.io/badge/TypeScript-3178C6?logo=TypeScript&logoColor=FFF&style=flat-square"/></a>|
+| 백엔드  | <img src="https://img.shields.io/badge/Django-092E20?style=flat-square&logo=Django&logoColor=white"></a> <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=PostgreSQL&logoColor=white"/></a> <img src="https://img.shields.io/badge/Gunicorn-499848?style=flat-square&logo=Gunicorn&logoColor=white"/></a> <img src="https://img.shields.io/badge/Nginx-009639?style=flat-square&logo=Nginx&logoColor=white"/></a> <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=Docker&logoColor=white"/></a> |
 
-**멤버별 responsibility**
+<br>
 
-1. 멤버 1: 팀장/프론트엔드 담당
+## 5. 프로젝트 팀원 소개 ✅
+| 이름 | 포지션 | 담당 업무 |
+| ------ | ------ | ------ |
+| **김한예슬** | 인공지능 | |
+| **강경욱** | 프론트엔드 | |
+| **홍준형** | 프론트엔드 | |
+| **최영훈** | 백엔드 | 1. 코스 DB 설계 및 API 개발 <br> 2. Docker 및 Gunicorn 배포 관리<br> 3. DB 데이터 삽입 및 생성|
+| **이영숙** | 팀장 / 백엔드 / 디자인 | 1. 유저 DB 설계 및 API 개발<br> 2. Docker 및 NGINX 배포 관리<br> 3. git submodule 레포지토리 관리<br> 4. 전체 서비스 페이지 디자인 <br>  |
 
-- 기획 단계: 구체적인 설계와 지표에 따른 프로젝트 제안서 작성
-- 개발 단계: 팀원간의 일정 등 조율 + 프론트 or 백엔드 or 인공지능 개발
-- 수정 단계: 기획, 스크럼 진행, 코치님 피드백 반영해서 수정, 발표 준비
 
-2. 멤버 2: 백엔드 담당
+<br>
 
-- 기획 단계: 큰 주제에서 문제 해결 아이디어 도출, 와이어프레임 작성
-- 개발 단계: 와이어프레임을 기반으로 API 및 데이터베이스 완성
-- 수정 단계: 피드백 반영해서 백엔드 설계 수정
 
-3. 멤버 3: 인공지능 담당
+## 6. 실행 방법 ✅
+###### Backend
+```
+docker-compose up
+```
+###### Frontend
+```
+npm install
+npm start
+```
 
-- 기획 단계: 큰 주제에서 문제 해결 아이디어 도출, 와이어프레임 작성
-- 개발 단계: 와이어프레임을 기반으로 인공지능 모델 구현, 모델 학습 진행
-- 수정 단계: 피드백 반영해서 모델 정확도 향상 
-
-## 6. 버전
-  - 프로젝트의 버전 기입
-
-## 7. FAQ
-  - 자주 받는 질문 정리
-
-## 테스트
+## 7. 시스템 아키텍쳐 ✅
+![image](uploads/cfb6449d1adac50e4ba2198d907fa544/image.png)
