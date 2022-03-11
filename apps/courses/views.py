@@ -4,7 +4,10 @@ from rest_framework import filters, generics, permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
-from apps.cores.paginations import StandardPageNumberPagination
+from apps.cores.paginations import (
+    CoursePageNumberPagination,
+    StandardPageNumberPagination,
+)
 from apps.cores.permissions import IsOwnerProp
 
 from .exceptions import (
@@ -44,7 +47,7 @@ class CourseListView(generics.ListAPIView):
 
     name = "Course List"
     serializer_class = CourseSerializer
-    pagination_class = StandardPageNumberPagination
+    pagination_class = CoursePageNumberPagination
     permission_classes = [permissions.AllowAny]
     throttle_scope = "standard"
     queryset = Course.objects.all()
