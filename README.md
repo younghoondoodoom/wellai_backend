@@ -106,4 +106,4 @@ docker-compose up
 
 
 ## 8. Database 구조 ✅
-![image](https://kdt-gitlab.elice.io/ai_track/class_03/ai_project/team10/backend/uploads/12720c11c2ccc5cb861bbae1ab96c08b/image.png)
+![image](https://kdt-gitlab.elice.io/ai_track/class_03/ai_project/team10/backend/uploads/89991d2660dc6a4c3f2139df470570a3/image.png)
