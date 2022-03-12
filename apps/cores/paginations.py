@@ -1,7 +1,7 @@
 from rest_framework.pagination import PageNumberPagination
 
 
-class StandardPageNumberPagination(PageNumberPagination):
+class ReviewPageNumberPagination(PageNumberPagination):
     """
     기준 페이지네이션
 
@@ -14,6 +14,10 @@ class StandardPageNumberPagination(PageNumberPagination):
 
 
 class CoursePageNumberPagination(PageNumberPagination):
+    """_summary_
+    댓글 페이지 네이션
+    """
+
     page_size = 20
     page_size_query_param = "size"
     max_page_size = 100

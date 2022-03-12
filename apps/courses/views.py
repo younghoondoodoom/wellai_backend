@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 from apps.cores.paginations import (
     CoursePageNumberPagination,
-    StandardPageNumberPagination,
+    ReviewPageNumberPagination,
 )
 from apps.cores.permissions import IsOwnerProp
 
@@ -34,7 +34,6 @@ class ExerciseDetailView(generics.RetrieveAPIView):
 
     name = "Exercise Detail"
     serializer_class = ExerciseSerializer
-    pagination_class = StandardPageNumberPagination
     permission_classes = [permissions.IsAuthenticated]
     throttle_scope = "standard"
     queryset = Exercise.objects.all()
@@ -74,7 +73,7 @@ class ReviewListCreateView(generics.ListCreateAPIView):
 
     name = "Course Review List & Create"
     serializer_class = CourseReviewShowUserSerializer
-    pagination_class = StandardPageNumberPagination
+    pagination_class = ReviewPageNumberPagination
     throttle_scope = "standard"
     filter_backends = [filters.OrderingFilter]
     ordering_fields = ["rating", "created_at"]
@@ -277,6 +276,12 @@ class CourseRecommendView(generics.ListAPIView):
         if request.user.is_anonymous:
             return Response(status=status.HTTP_204_NO_CONTENT)
         queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 

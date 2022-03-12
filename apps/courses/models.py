@@ -35,7 +35,7 @@ class Course(models.Model):
     img_url = models.CharField(max_length=350, unique=True)
     avg_rating = models.FloatField(default=0, verbose_name="평균 평점")
     count_review = models.IntegerField(default=0, verbose_name="리뷰 개수")
-    description = models.CharField(max_length=1000, verbose_name="코스 설명", blank=True)
+    description = models.TextField(max_length=1000, verbose_name="코스 설명", blank=True)
     hash_tag = models.ManyToManyField(
         Tag, related_name="course", verbose_name="해쉬태그", blank=True
     )
