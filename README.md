@@ -107,4 +107,4 @@ npm start
 ```
 
 ## 7. 시스템 아키텍쳐 ✅
-![image](uploads/cfb6449d1adac50e4ba2198d907fa544/image.png)
+![image](https://kdt-gitlab.elice.io/ai_track/class_03/ai_project/team10/wellai/uploads/2d30cd91d59ff6dffa39c34a146e69e3/archi.001.png)
