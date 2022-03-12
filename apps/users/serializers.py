@@ -51,8 +51,8 @@ class UserOptionSerializer(serializers.ModelSerializer):
             "is_sit",
             "is_balance",
             "is_core",
-            "is_leg",
-            "is_back",
+            "is_arm",
+            "is_recline",
         )
         excludes = (
             "id",

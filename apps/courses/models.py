@@ -6,7 +6,7 @@ from apps.users.models import User
 
 
 class Tag(models.Model):
-    tag_name = models.CharField(max_length=30, verbose_name="해시태그")
+    tag_name = models.CharField(max_length=30, unique=True, verbose_name="해시태그")
 
     def __str__(self):
         return self.tag_name

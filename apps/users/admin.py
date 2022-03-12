@@ -45,8 +45,8 @@ class MyUserOptionAdmin(admin.ModelAdmin):
         "is_sit",
         "is_balance",
         "is_core",
-        "is_leg",
-        "is_back",
+        "is_arm",
+        "is_recline",
         "modified_at",
     ]
     fieldsets = (
@@ -69,8 +69,8 @@ class MyUserOptionAdmin(admin.ModelAdmin):
                     "is_sit",
                     "is_balance",
                     "is_core",
-                    "is_leg",
-                    "is_back",
+                    "is_arm",
+                    "is_recline",
                 )
             },
         ),

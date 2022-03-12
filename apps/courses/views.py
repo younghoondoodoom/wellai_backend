@@ -1,5 +1,3 @@
-import random
-
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions, status
@@ -17,7 +15,7 @@ from .exceptions import (
     BookMarkExistException,
     ReviewExistException,
 )
-from .models import BookMark, Course, CourseReview, Exercise
+from .models import BookMark, Course, CourseReview, Exercise, Tag
 from .serializers import (
     BookmarkCreateSerializer,
     BookMarkSerializer,
@@ -290,45 +288,47 @@ class CourseRecommendView(generics.ListAPIView):
     def get_queryset(self):
         user = self.request.user
         user_option = user.option
-        course = Course.objects.all()
         queryset = None
         if user_option.is_stand:
-            queryset = course.order_by("-stand_count")[:3]
+            stand_tag = Tag.objects.get(tag_name="서서")
+            queryset = stand_tag.course.all()
         if user_option.is_sit:
-            qs = course.order_by("-sit_count")[:3]
+            sit_tag = Tag.objects.get(tag_name="앉아서")
+            qs = sit_tag.course.all()
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
         if user_option.is_balance:
-            qs = course.order_by("-balance_count")[:3]
+            balance_tag = Tag.objects.get(tag_name="밸런스")
+            qs = balance_tag.course.all()
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
         if user_option.is_core:
-            qs = course.order_by("-core_count")[:3]
+            core_tag = Tag.objects.get(tag_name="코어")
+            qs = core_tag.course.all()
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
-        if user_option.is_leg:
-            qs = course.order_by("-arm_count")[:3]
+        if user_option.is_arm:
+            arm_tag = Tag.objects.get(tag_name="팔")
+            qs = arm_tag.course.all()
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
-        if user_option.is_back:
-            qs = course.order_by("-recline_count")[:3]
+        if user_option.is_recline:
+            recline_tag = Tag.objects.get(tag_name="누워서")
+            qs = recline_tag.course.all()
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
 
         if queryset is None:
-            return course.order_by("?")[0:1]
-        if queryset.count() == 3:
-            index = random.randint(1, 3)
-            return queryset[index - 1 : index]
+            return Course.objects.order_by("?")[0:1]
 
         return queryset.order_by("?")[0:1]

@@ -107,8 +107,8 @@ class UserOption(TimeStampModel, models.Model):
     is_sit = models.BooleanField(default=False, verbose_name="앉아서")
     is_balance = models.BooleanField(default=False, verbose_name="밸런스")
     is_core = models.BooleanField(default=False, verbose_name="코어")
-    is_leg = models.BooleanField(default=False, verbose_name="다리")
-    is_back = models.BooleanField(default=False, verbose_name="등")
+    is_arm = models.BooleanField(default=False, verbose_name="팔")
+    is_recline = models.BooleanField(default=False, verbose_name="누워서")
 
     def __str__(self):
         return f"{self.user_id}"
