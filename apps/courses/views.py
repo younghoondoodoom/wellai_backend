@@ -4,10 +4,7 @@ from rest_framework import filters, generics, permissions, status
 from rest_framework.exceptions import NotFound
 from rest_framework.response import Response
 
-from apps.cores.paginations import (
-    CoursePageNumberPagination,
-    StandardPageNumberPagination,
-)
+from apps.cores.paginations import StandardPageNumberPagination
 from apps.cores.permissions import IsOwnerProp
 
 from .exceptions import (
@@ -34,7 +31,6 @@ class ExerciseDetailView(generics.RetrieveAPIView):
 
     name = "Exercise Detail"
     serializer_class = ExerciseSerializer
-    pagination_class = StandardPageNumberPagination
     permission_classes = [permissions.IsAuthenticated]
     throttle_scope = "standard"
     queryset = Exercise.objects.all()
@@ -47,7 +43,7 @@ class CourseListView(generics.ListAPIView):
 
     name = "Course List"
     serializer_class = CourseSerializer
-    pagination_class = CoursePageNumberPagination
+    pagination_class = StandardPageNumberPagination
     permission_classes = [permissions.AllowAny]
     throttle_scope = "standard"
     queryset = Course.objects.all()
