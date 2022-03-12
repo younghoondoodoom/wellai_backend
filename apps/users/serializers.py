@@ -115,7 +115,7 @@ class UserDailyRecordSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         user = self.context["request"].user
-        exercise_duration = round(int(validated_data["exercise_duration"]) / 60)
+        exercise_duration = validated_data["exercise_duration"]
         exercise_date = validated_data["exercise_date"]
         user_option = UserOption.objects.get(user_id=user)
         calories = get_calories(user_option.weight, exercise_duration)
@@ -144,7 +144,7 @@ class UserMonthlyRecordSerializer(serializers.ModelSerializer):
 
     def get_month_exercise_time(self, obj):
         time = list(obj.daily_record.aggregate(Sum("exercise_duration")).values())[0]
-        return round(int(time) / 60) if time else 0
+        return time if time else 0
 
     def get_month_calories(self, obj):
         cals = list(obj.daily_record.aggregate(Sum("calories_total")).values())[0]
@@ -166,10 +166,11 @@ class UserAnnualRecordSerializer(serializers.ModelSerializer):
     year_exercise_duration = serializers.SerializerMethodField()
     year_calories = serializers.SerializerMethodField()
     months_exercise_duration = serializers.SerializerMethodField()
+    months_calories = serializers.SerializerMethodField()
 
     def get_year_exercise_duration(self, obj):
         time = list(obj.daily_record.aggregate(Sum("exercise_duration")).values())[0]
-        return round(int(time) / 60) if time else 0
+        return time if time else 0
 
     def get_year_calories(self, obj):
         cals = list(obj.daily_record.aggregate(Sum("calories_total")).values())[0]
@@ -181,7 +182,7 @@ class UserAnnualRecordSerializer(serializers.ModelSerializer):
             .values("month")
             .annotate(total=Sum("exercise_duration"))
         )
-        return round(time / 60)
+        return time
 
     def get_months_calories(self, obj):
         cals = list(
