@@ -1,3 +1,5 @@
+import random
+
 from django.db import transaction
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions, status
@@ -291,33 +293,33 @@ class CourseRecommendView(generics.ListAPIView):
         course = Course.objects.all()
         queryset = None
         if user_option.is_stand:
-            queryset = course.order_by("-stand_count")[:5]
+            queryset = course.order_by("-stand_count")[:3]
         if user_option.is_sit:
-            qs = course.order_by("-sit_count")[:5]
+            qs = course.order_by("-sit_count")[:3]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
         if user_option.is_balance:
-            qs = course.order_by("-balance_count")[:5]
+            qs = course.order_by("-balance_count")[:3]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
         if user_option.is_core:
-            qs = course.order_by("-core_count")[:5]
+            qs = course.order_by("-core_count")[:3]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
         if user_option.is_leg:
-            qs = course.order_by("-arm_count")[:5]
+            qs = course.order_by("-arm_count")[:3]
             if queryset is None:
                 queryset = qs
             else:
                 queryset = queryset | qs
         if user_option.is_back:
-            qs = course.order_by("-recline_count")[:5]
+            qs = course.order_by("-recline_count")[:3]
             if queryset is None:
                 queryset = qs
             else:
@@ -325,5 +327,8 @@ class CourseRecommendView(generics.ListAPIView):
 
         if queryset is None:
             return course.order_by("?")[0:1]
+        if queryset.count() == 3:
+            index = random.randint(1, 3)
+            return queryset[index - 1 : index]
 
         return queryset.order_by("?")[0:1]
