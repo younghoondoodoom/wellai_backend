@@ -7,6 +7,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.prod")
 django.setup()
 
 from apps.courses.models import Course, Exercise, Tag
+from apps.users.models import User, UserDailyRecord, UserOption
 
 EXERCISE_CSV_PATH = "data/exercise.csv"
 
@@ -57,3 +58,137 @@ with open(COURSE_CSV_PATH, "r", encoding="utf-8") as course:
             tag = Tag.objects.get(tag_name=hash_tag[i])
             data.hash_tag.add(tag)
         data.save()
+
+# Create User
+import datetime
+import random
+
+from apps.users.utils import get_calories
+
+test_user = User.objects.create_user(
+    email="test@test.com", password="test123!", nickname="챠챠", is_staff=True
+)
+test_option = UserOption(
+    user_id=test_user, gender="M", height=180, weight=70, is_stand=True, is_sit=True
+)
+test_option.save()
+
+for i in range(1, 32):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 1, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()
+
+for i in range(1, 29):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 2, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()
+
+for i in range(1, 32):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 3, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()
+
+for i in range(1, 31):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 4, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()
+
+for i in range(1, 32):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 5, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()
+
+for i in range(1, 31):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 6, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()
+
+for i in range(1, 32):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 7, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()
+
+for i in range(1, 32):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 8, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()
+
+for i in range(1, 31):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 9, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()
+
+for i in range(1, 32):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 10, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()
+
+for i in range(1, 31):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 11, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()
+
+for i in range(1, 32):
+    duration = random.randint(600, 1200)
+    test_record = UserDailyRecord(
+        user_id=test_user,
+        exercise_date=datetime.date(2022, 12, i),
+        exercise_duration=duration,
+        calories_total=get_calories(70, duration),
+    )
+    test_record.save()

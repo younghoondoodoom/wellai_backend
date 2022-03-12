@@ -82,7 +82,7 @@ class UserAnnualRecordView(generics.ListAPIView):
                 "daily_record",
                 queryset=UserDailyRecord.objects.filter(
                     exercise_date__year=timezone.now().year,
-                ),
+                ).order_by("exercise_date__month"),
             )
         )
         return queryset
