@@ -100,11 +100,10 @@
 ```
 docker-compose up
 ```
-###### Frontend
-```
-npm install
-npm start
-```
 
 ## 7. 시스템 아키텍쳐 ✅
 ![image](https://kdt-gitlab.elice.io/ai_track/class_03/ai_project/team10/wellai/uploads/2d30cd91d59ff6dffa39c34a146e69e3/archi.001.png)
+
+
+## 8. Database 구조 ✅
+![image](https://kdt-gitlab.elice.io/ai_track/class_03/ai_project/team10/backend/uploads/12720c11c2ccc5cb861bbae1ab96c08b/image.png)
