@@ -14,7 +14,7 @@ class ReviewPageNumberPagination(PageNumberPagination):
 
 
 class CoursePageNumberPagination(PageNumberPagination):
-    """_summary_
+    """
     댓글 페이지 네이션
     """
 
