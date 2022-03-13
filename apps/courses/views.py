@@ -1,4 +1,5 @@
 from django.db import transaction
+from django.db.models import Avg
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions, status
 from rest_framework.exceptions import NotFound
@@ -105,17 +106,11 @@ class ReviewListCreateView(generics.ListCreateAPIView):
         if review_queryset.exists():
             raise ReviewExistException
 
-        if course.count_review == 0:
-            course.avg_rating = serializer.validated_data["rating"]
-        else:
-            course.avg_rating = round(
-                (course.avg_rating + serializer.validated_data["rating"]) / 2, 1
-            )
-
-        course.count_review += 1
-        course.save()
-
         serializer.save(user_id=user, course_id=course)
+
+        reviews = course.review.filter(is_deleted=False).aggregate(Avg("rating"))
+        course.avg_rating = round(reviews["rating__avg"], 1)
+        course.save()
 
 
 class MyReviewCollectListView(generics.ListAPIView):
@@ -168,44 +163,29 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
         """
         코스 평균 평점, 리뷰 개수에 삭제되는 리뷰를 반영
         """
-        course = review.course_id
-        count_review = course.count_review
+        review.delete()
 
-        if count_review == 1:
+        course = review.course_id
+        if course.review.count() == 0:
             course.avg_rating = 0
         else:
-            course.avg_rating = round(
-                (course.avg_rating * count_review - review.rating) / (count_review - 1),
-                1,
-            )
-        course.count_review -= 1
-        course.save()
+            reviews = course.review.filter(is_deleted=False).aggregate(Avg("rating"))
+            course.avg_rating = round(reviews["rating__avg"], 1)
 
-        review.delete()
+        course.save()
 
     @transaction.atomic
     def perform_update(self, serializer):
         """
         코스 평균 평점에 수정되는 리뷰를 반영
         """
+        serializer.save()
+
         review = self.get_object()
         course = review.course_id
-        count_review = course.count_review
-
-        if count_review == 1:
-            course.avg_rating = serializer.validated_data["rating"]
-        else:
-            course.avg_rating = round(
-                (
-                    course.avg_rating * count_review
-                    - review.rating
-                    + serializer.validated_data["rating"]
-                )
-                / count_review
-            )
+        reviews = course.review.filter(is_deleted=False).aggregate(Avg("rating"))
+        course.avg_rating = round(reviews["rating__avg"], 1)
         course.save()
-
-        serializer.save()
 
 
 class BookMarkListCreateView(generics.ListCreateAPIView):
