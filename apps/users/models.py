@@ -19,8 +19,8 @@ class CustomUserManager(BaseUserManager):
     use_in_migrations = True
 
     def create_user(self, email, password, **extra_fields):
-        if not email:
-            raise ValueError("The given email must be set")
+        if not email or not password:
+            raise ValueError("The given email or password must be set")
 
         email = self.normalize_email(email)
         extra_fields.setdefault("is_superuser", False)
@@ -30,7 +30,7 @@ class CustomUserManager(BaseUserManager):
         return user
 
     def create_superuser(self, email, password, **extra_fields):
-        if not email:
+        if not email or not password:
             raise ValueError("The given email must be set")
 
         email = self.normalize_email(email)
