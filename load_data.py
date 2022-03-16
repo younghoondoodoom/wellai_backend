@@ -9,7 +9,7 @@ django.setup()
 from apps.courses.models import Course, Exercise, Tag
 from apps.users.models import User, UserDailyRecord, UserOption
 
-EXERCISE_CSV_PATH = "./exercise.csv"
+EXERCISE_CSV_PATH = "data/exercise.csv"
 
 with open(EXERCISE_CSV_PATH, "r", encoding="utf-8") as exercises:
     data_reader = csv.DictReader(exercises)
@@ -24,7 +24,7 @@ with open(EXERCISE_CSV_PATH, "r", encoding="utf-8") as exercises:
         )
 
 
-TAG_CSV_PATH = "./tag.csv"
+TAG_CSV_PATH = "data/tag.csv"
 
 with open(TAG_CSV_PATH, "r", encoding="utf-8") as tag:
     data_reader = csv.DictReader(tag)
@@ -32,7 +32,7 @@ with open(TAG_CSV_PATH, "r", encoding="utf-8") as tag:
         Tag.objects.create(tag_name=row["tag_name"])
 
 
-COURSE_CSV_PATH = "./course.csv"
+COURSE_CSV_PATH = "data/course.csv"
 
 with open(COURSE_CSV_PATH, "r", encoding="utf-8") as course:
     data_reader = csv.DictReader(course)
