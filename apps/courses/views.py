@@ -1,5 +1,5 @@
 from django.db import transaction
-from django.db.models import Avg
+from django.db.models import Avg, Count
 from django.utils.translation import gettext_lazy as _
 from rest_framework import filters, generics, permissions, status
 from rest_framework.exceptions import NotFound
@@ -108,8 +108,11 @@ class ReviewListCreateView(generics.ListCreateAPIView):
 
         serializer.save(user_id=user, course_id=course)
 
-        reviews = course.review.filter(is_deleted=False).aggregate(Avg("rating"))
+        reviews = course.review.filter(is_deleted=False).aggregate(
+            Avg("rating"), Count("id")
+        )
         course.avg_rating = round(reviews["rating__avg"], 1)
+        course.count_review = reviews["id__count"]
         course.save()
 
 
@@ -169,8 +172,11 @@ class ReviewDeleteUpdateView(generics.RetrieveUpdateDestroyAPIView):
         if course.review.count() == 0:
             course.avg_rating = 0
         else:
-            reviews = course.review.filter(is_deleted=False).aggregate(Avg("rating"))
+            reviews = course.review.filter(is_deleted=False).aggregate(
+                Avg("rating"), Count("id")
+            )
             course.avg_rating = round(reviews["rating__avg"], 1)
+            course.count_review = reviews["id__count"]
 
         course.save()
 
