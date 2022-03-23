@@ -74,7 +74,7 @@ class CourseReview(TimeStampModel, DeleteModel):
     )
     content = models.TextField(max_length=300, verbose_name="내용")
     rating = models.PositiveSmallIntegerField(
-        validators=[MinValueValidator(1), MaxValueValidator(5)], verbose_name="평점"
+        validators=[MinValueValidator(0), MaxValueValidator(5)], verbose_name="평점"
     )
 
     def __str__(self):
